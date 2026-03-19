@@ -1,0 +1,11 @@
+# Copilot CLI Toolkit
+
+## Ignore patterns
+memory.db
+*.pyc
+__pycache__/
+.env
+.ado_token.tmp
+*.tmp
+.DS_Store
+Thumbs.db
