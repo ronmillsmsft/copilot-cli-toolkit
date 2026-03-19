@@ -30,6 +30,8 @@ That's it. Your assistant will greet you by name, remember past sessions, and bu
 
 ## How It Works
 
+> 📐 **[Full architecture diagrams →](docs/architecture.md)** (system overview, data flow, tier map, role modules)
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │                  Copilot CLI Session                │
@@ -52,7 +54,7 @@ That's it. Your assistant will greet you by name, remember past sessions, and bu
 └─────────────────────────────────────────────────────┘
 ```
 
-Your assistant loads instruction files at session start, queries memory for context, uses available tools to get work done, and logs meaningful work back to memory at session end.
+The **core platform** (memory + instructions + CLI tools) is universal. **Role-specific modules** (PM workflows, engineering tools, analyst pipelines) plug in on top. See the [architecture docs](docs/architecture.md) for the full visual breakdown.
 
 ## Tiers
 
