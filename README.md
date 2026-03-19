@@ -10,6 +10,12 @@ Built by a busy PM who needed to save time, not learn a framework.
 
 ## Quick Start (5 Minutes)
 
+### Option A: Setup Wizard (Recommended)
+
+Open **[starter/setup-wizard.html](starter/setup-wizard.html)** in your browser. Answer a few questions about yourself and your work style. It generates all your config files ready to download. No command line needed.
+
+### Option B: Manual Setup
+
 ```bash
 # 1. Clone this repo
 git clone https://github.com/ronmillsmsft/copilot-cli-toolkit.git

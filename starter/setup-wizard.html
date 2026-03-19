@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copilot CLI Toolkit — Setup Wizard</title>
+<style>
+    :root {
+        --bg: #0d1117; --surface: #161b22; --surface2: #21262d;
+        --border: #30363d; --text: #e6edf3; --muted: #8b949e;
+        --accent: #58a6ff; --green: #3fb950; --yellow: #d29922;
+        --red: #f85149; --purple: #bc8cff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* Header */
+    .header { text-align: center; padding: 40px 20px 20px; }
+    .header h1 { font-size: 2rem; margin-bottom: 8px; }
+    .header h1 span { color: var(--accent); }
+    .header p { color: var(--muted); font-size: 1rem; }
+
+    /* Progress */
+    .progress { display: flex; justify-content: center; gap: 8px; padding: 20px; max-width: 600px; margin: 0 auto; }
+    .step-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); transition: all 0.3s; }
+    .step-dot.active { background: var(--accent); border-color: var(--accent); }
+    .step-dot.done { background: var(--green); border-color: var(--green); }
+    .step-label { display: flex; justify-content: center; gap: 28px; max-width: 600px; margin: 0 auto 20px; }
+    .step-label span { font-size: 0.7rem; color: var(--muted); width: 50px; text-align: center; }
+    .step-label span.active { color: var(--accent); font-weight: 600; }
+
+    /* Card */
+    .wizard { max-width: 640px; margin: 0 auto; padding: 0 20px 40px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px; }
+    .card h2 { font-size: 1.3rem; margin-bottom: 6px; }
+    .card .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+
+    /* Form elements */
+    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; margin-top: 18px; }
+    label:first-of-type { margin-top: 0; }
+    .hint { font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; }
+    input[type="text"], textarea, select {
+        width: 100%; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border);
+        border-radius: 8px; color: var(--text); font-size: 0.95rem; font-family: inherit;
+        transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 80px; }
+    select { cursor: pointer; }
+
+    /* Radio/Checkbox groups */
+    .option-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .option-btn { padding: 8px 16px; background: var(--surface2); border: 1px solid var(--border);
+        border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text); transition: all 0.2s; }
+    .option-btn:hover { border-color: var(--accent); }
+    .option-btn.selected { background: rgba(88,166,255,0.15); border-color: var(--accent); color: var(--accent); }
+
+    /* Buttons */
+    .btn-row { display: flex; justify-content: space-between; margin-top: 28px; }
+    .btn { padding: 10px 24px; border-radius: 8px; border: none; font-size: 0.95rem; font-weight: 600;
+        cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #79c0ff; }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--accent); }
+    .btn-success { background: var(--green); color: #fff; font-size: 1.1rem; padding: 14px 32px; }
+    .btn-success:hover { background: #56d364; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Review */
+    .review-section { background: var(--surface2); border-radius: 8px; padding: 16px; margin-top: 16px; }
+    .review-section h3 { font-size: 0.95rem; color: var(--accent); margin-bottom: 10px; }
+    .review-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.85rem; }
+    .review-row .label { color: var(--muted); }
+    .review-row .value { color: var(--text); text-align: right; max-width: 60%; }
+
+    /* File preview */
+    .file-preview { background: #0d1117; border: 1px solid var(--border); border-radius: 8px;
+        padding: 16px; margin-top: 12px; font-family: 'Cascadia Code', 'Fira Code', monospace;
+        font-size: 0.8rem; white-space: pre-wrap; color: var(--green); max-height: 300px; overflow-y: auto; }
+    .file-tabs { display: flex; gap: 4px; margin-top: 16px; }
+    .file-tab { padding: 6px 14px; background: var(--surface2); border: 1px solid var(--border);
+        border-bottom: none; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 0.8rem; color: var(--muted); }
+    .file-tab.active { background: #0d1117; color: var(--green); border-color: var(--border); }
+
+    /* Complete screen */
+    .complete { text-align: center; padding: 40px 20px; }
+    .complete .icon { font-size: 4rem; margin-bottom: 16px; }
+    .complete h2 { margin-bottom: 8px; }
+    .complete p { color: var(--muted); margin-bottom: 24px; }
+    .next-steps { text-align: left; background: var(--surface2); border-radius: 8px; padding: 20px; margin-top: 20px; }
+    .next-steps li { margin: 8px 0; font-size: 0.9rem; }
+    .next-steps code { background: var(--bg); padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; }
+
+    .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>📺 <span>Copilot CLI Toolkit</span></h1>
+    <p>Let's set up your persistent AI assistant. Takes about 3 minutes.</p>
+</div>
+
+<div class="progress" id="progressDots"></div>
+<div class="step-label" id="stepLabels"></div>
+
+<div class="wizard" id="wizard">
+    <!-- Steps injected by JS -->
+</div>
+
+<script>
+const STEPS = [
+    {
+        title: "About You",
+        subtitle: "Tell your assistant who it's working with.",
+        fields: [
+            { id: "userName", label: "What's your name?", type: "text", placeholder: "e.g., Sarah Chen", required: true },
+            { id: "userRole", label: "What's your role?", type: "text", placeholder: "e.g., Program Manager, Software Engineer, Data Analyst" },
+            { id: "userOrg", label: "Team or organization (optional)", type: "text", placeholder: "e.g., Cloud Engineering, Marketing" },
+            { id: "userOS", label: "What computer do you use?", type: "options", options: ["Windows", "Mac", "Linux"], multi: false },
+        ]
+    },
+    {
+        title: "Your Assistant",
+        subtitle: "Give your AI assistant a personality.",
+        fields: [
+            { id: "assistantName", label: "What should your assistant be called?", type: "text", placeholder: "e.g., Max, Jarvis, Friday, or just 'Assistant'", hint: "Pick something memorable. You'll be talking to it a lot." },
+            { id: "assistantTone", label: "How should it communicate?", type: "options",
+              options: ["Direct & efficient", "Friendly & patient", "Casual & witty", "Professional & thorough"], multi: false },
+            { id: "assistantTeaching", label: "When you're learning something new, how much explanation do you want?", type: "options",
+              options: ["Just show me the code", "Brief explanation with the code", "Teach me the concepts", "Explain like I'm new to this"], multi: false },
+        ]
+    },
+    {
+        title: "Your Work",
+        subtitle: "Help your assistant understand what you do day-to-day.",
+        fields: [
+            { id: "workTools", label: "What tools do you use regularly?", type: "options",
+              options: ["Azure DevOps", "Jira", "GitHub", "Confluence", "SharePoint", "Power BI", "Excel", "VS Code", "Teams", "Outlook", "Planner", "OneNote"],
+              multi: true, hint: "Pick all that apply." },
+            { id: "workLanguages", label: "What programming languages do you work with? (if any)", type: "text",
+              placeholder: "e.g., Python, JavaScript, SQL, PowerShell — or 'none'", hint: "It's totally fine to say none." },
+            { id: "workGoals", label: "What are you hoping your assistant will help with most?", type: "options",
+              options: ["Save time on repetitive tasks", "Meeting prep & notes", "Writing & communication", "Code & scripts", "Data analysis", "Learning new skills", "Staying organized"],
+              multi: true, hint: "Pick your top priorities." },
+        ]
+    },
+    {
+        title: "Preferences",
+        subtitle: "A few choices to make your assistant smarter from day one.",
+        fields: [
+            { id: "prefDecisions", label: "When there are multiple ways to do something, should your assistant...", type: "options",
+              options: ["Pick the best option and go", "Recommend one but explain why", "Show me the options and let me choose"], multi: false },
+            { id: "prefMistakes", label: "If something goes wrong, should your assistant...", type: "options",
+              options: ["Try to fix it automatically", "Tell me what happened and suggest a fix", "Stop and ask before doing anything"], multi: false },
+            { id: "prefVerbosity", label: "How much detail do you want in responses?", type: "options",
+              options: ["Keep it short", "Normal — enough to understand", "Give me all the details"], multi: false },
+        ]
+    },
+    {
+        title: "Review & Generate",
+        subtitle: "Here's what we'll set up. Review and download your files.",
+        fields: [] // rendered custom
+    }
+];
+
+const STEP_NAMES = ["You", "Assistant", "Work", "Prefs", "Done"];
+
+let currentStep = 0;
+let formData = {};
+
+function init() {
+    renderProgress();
+    renderStep(0);
+}
+
+function renderProgress() {
+    const dots = document.getElementById('progressDots');
+    const labels = document.getElementById('stepLabels');
+    dots.innerHTML = STEPS.map((_, i) =>
+        `<div class="step-dot ${i === currentStep ? 'active' : i < currentStep ? 'done' : ''}" id="dot-${i}"></div>`
+    ).join('');
+    labels.innerHTML = STEP_NAMES.map((name, i) =>
+        `<span class="${i === currentStep ? 'active' : ''}">${name}</span>`
+    ).join('');
+}
+
+function renderStep(idx) {
+    currentStep = idx;
+    renderProgress();
+    const wizard = document.getElementById('wizard');
+    const step = STEPS[idx];
+
+    if (idx === STEPS.length - 1) {
+        wizard.innerHTML = renderReview();
+        return;
+    }
+
+    let fieldsHtml = step.fields.map(f => {
+        let input = '';
+        const val = formData[f.id] || '';
+        const hint = f.hint ? `<div class="hint">${f.hint}</div>` : '';
+
+        if (f.type === 'text') {
+            input = `${hint}<input type="text" id="${f.id}" value="${escHtml(Array.isArray(val) ? val.join(', ') : val)}" placeholder="${f.placeholder || ''}" onchange="saveField('${f.id}', this.value)">`;
+        } else if (f.type === 'options') {
+            const selected = Array.isArray(val) ? val : (val ? [val] : []);
+            input = `${hint}<div class="option-group">${f.options.map(o =>
+                `<div class="option-btn ${selected.includes(o) ? 'selected' : ''}" onclick="toggleOption('${f.id}', '${escHtml(o)}', ${f.multi})">${o}</div>`
+            ).join('')}</div>`;
+        }
+        return `<label>${f.label}</label>${input}`;
+    }).join('');
+
+    wizard.innerHTML = `
+        <div class="card">
+            <h2>${step.title}</h2>
+            <div class="subtitle">${step.subtitle}</div>
+            ${fieldsHtml}
+            <div class="btn-row">
+                <button class="btn btn-secondary ${idx === 0 ? 'hidden' : ''}" onclick="renderStep(${idx - 1})">← Back</button>
+                <button class="btn btn-primary" onclick="renderStep(${idx + 1})">Next →</button>
+            </div>
+        </div>`;
+}
+
+function renderReview() {
+    const name = formData.userName || 'there';
+    const assistant = formData.assistantName || 'Assistant';
+    const files = generateFiles();
+
+    const reviewRows = [
+        ['Your name', formData.userName],
+        ['Role', formData.userRole],
+        ['OS', formData.userOS],
+        ['Assistant name', formData.assistantName],
+        ['Tone', formData.assistantTone],
+        ['Teaching style', formData.assistantTeaching],
+        ['Tools', Array.isArray(formData.workTools) ? formData.workTools.join(', ') : formData.workTools],
+        ['Languages', formData.workLanguages],
+        ['Goals', Array.isArray(formData.workGoals) ? formData.workGoals.join(', ') : formData.workGoals],
+        ['Decision style', formData.prefDecisions],
+        ['Error handling', formData.prefMistakes],
+        ['Verbosity', formData.prefVerbosity],
+    ].filter(r => r[1]).map(r => `<div class="review-row"><span class="label">${r[0]}</span><span class="value">${r[1]}</span></div>`).join('');
+
+    const tabButtons = Object.keys(files).map((f, i) =>
+        `<div class="file-tab ${i === 0 ? 'active' : ''}" onclick="showFileTab('${f}', this)">${f}</div>`
+    ).join('');
+
+    const firstFile = Object.keys(files)[0];
+
+    return `
+        <div class="card">
+            <h2>Looking good, ${escHtml(name)}! 🎉</h2>
+            <div class="subtitle">Here's your setup. The files below are ready to download.</div>
+            <div class="review-section">
+                <h3>Your Configuration</h3>
+                ${reviewRows}
+            </div>
+            <div class="file-tabs">${tabButtons}</div>
+            <div class="file-preview" id="filePreview">${escHtml(files[firstFile])}</div>
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="renderStep(${currentStep - 1})">← Back</button>
+                <button class="btn btn-success" onclick="downloadAll()">⬇ Download All Files</button>
+            </div>
+        </div>`;
+}
+
+function showFileTab(filename, el) {
+    const files = generateFiles();
+    document.getElementById('filePreview').textContent = files[filename];
+    document.querySelectorAll('.file-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+}
+
+function generateFiles() {
+    const d = formData;
+    const name = d.userName || '[Your Name]';
+    const role = d.userRole || '[Your Role]';
+    const os = d.userOS || '[Your OS]';
+    const org = d.userOrg || '';
+    const aName = d.assistantName || 'Assistant';
+    const tone = d.assistantTone || 'Direct & efficient';
+    const teaching = d.assistantTeaching || 'Brief explanation with the code';
+    const tools = Array.isArray(d.workTools) ? d.workTools.join(', ') : (d.workTools || '');
+    const langs = d.workLanguages || '';
+    const goals = Array.isArray(d.workGoals) ? d.workGoals.join(', ') : (d.workGoals || '');
+    const decisions = d.prefDecisions || 'Recommend one but explain why';
+    const errors = d.prefMistakes || 'Tell me what happened and suggest a fix';
+    const verbosity = d.prefVerbosity || 'Normal — enough to understand';
+
+    const toneMap = {
+        'Direct & efficient': 'Direct and concise. Say it in the fewest words that are still clear.',
+        'Friendly & patient': 'Warm and approachable. Take time to explain clearly.',
+        'Casual & witty': 'Relaxed and clever. Light humor welcome, but substance first.',
+        'Professional & thorough': 'Polished and detailed. Err on the side of completeness.'
+    };
+
+    const teachMap = {
+        'Just show me the code': 'Minimal explanation. Show the code, let me figure it out.',
+        'Brief explanation with the code': 'Explain the why in 1-2 sentences alongside the code.',
+        'Teach me the concepts': 'Explain patterns and concepts. Help me understand, not just copy.',
+        "Explain like I'm new to this": 'Patient, step-by-step explanations. No assumptions about prior knowledge.'
+    };
+
+    const decisionMap = {
+        'Pick the best option and go': 'Execute the best approach immediately for low-risk decisions.',
+        'Recommend one but explain why': 'Recommend the best option with brief rationale before executing.',
+        'Show me the options and let me choose': 'Present options with tradeoffs and wait for direction.'
+    };
+
+    const errorMap = {
+        'Try to fix it automatically': 'Try alternative approaches before reporting failure.',
+        'Tell me what happened and suggest a fix': 'Explain what went wrong and recommend a fix.',
+        'Stop and ask before doing anything': 'Stop on any error and ask for guidance.'
+    };
+
+    const files = {};
+
+    files['copilot-instructions.md'] = `# Copilot CLI Custom Instructions
+
+## Identity
+
+You are ${aName} — ${name}'s persistent AI assistant running in GitHub Copilot CLI.
+Your job is to make ${name} faster, smarter, and more effective.
+
+## About ${name}
+
+- **Name:** ${name}
+- **Role:** ${role}${org ? '\n- **Team:** ' + org : ''}
+- **Environment:** ${os}
+${langs ? '- **Languages:** ' + langs : ''}
+${tools ? '- **Tools:** ' + tools : ''}
+
+## Communication Style
+
+${toneMap[tone] || tone}
+
+## Teaching Mode
+
+${teachMap[teaching] || teaching}
+
+## Decision Making
+
+${decisionMap[decisions] || decisions}
+
+## Error Handling
+
+${errorMap[errors] || errors}
+
+## Operating Rules
+
+1. **Action Over Discussion** — Do the work, don't describe what you could do.
+2. **Own the Task** — When you take something on, finish it. Don't come back with excuses.
+3. **Context Is King** — Load memory at session start. Reference past work when relevant.
+
+## Boot Sequence
+
+At the start of every session, run:
+\`\`\`bash
+cd memory
+python cli.py status
+python cli.py pref list
+python cli.py insight list
+\`\`\`
+
+Then greet ${name} with relevant context from memory. Keep it to 3-4 lines.
+
+## Session End
+
+When ${name} is done, automatically:
+1. Log the conversation summary to memory
+2. Save any new preferences discovered
+3. Save any new insights (decisions, patterns, context)
+`;
+
+    files['USER.md'] = `# USER.md — ${name}'s Profile
+
+## Basics
+
+- **Name:** ${name}
+- **Role:** ${role}${org ? '\n- **Team:** ' + org : ''}
+- **Environment:** ${os}
+
+## Tools & Skills
+
+${tools ? '- **Regular tools:** ' + tools : '- **Regular tools:** (not specified)'}
+${langs ? '- **Languages:** ' + langs : '- **Languages:** (not specified)'}
+
+## Goals
+
+${goals ? goals.split(', ').map(g => '- ' + g).join('\n') : '- (not specified)'}
+
+## Communication Preferences
+
+- **Tone:** ${tone}
+- **Teaching:** ${teaching}
+- **Decisions:** ${decisions}
+- **Errors:** ${errors}
+- **Detail level:** ${verbosity}
+`;
+
+    files['SOUL.md'] = `# SOUL.md — ${aName}'s Identity
+
+## Identity
+
+- **Name:** ${aName}
+- **Role:** Persistent AI assistant and teammate
+- **Platform:** GitHub Copilot CLI
+
+## Communication Style
+
+${toneMap[tone] || tone}
+
+## Core Values
+
+1. **Competence Over Performance** — Be helpful, not performatively helpful.
+2. **Ownership** — Own tasks end-to-end.
+3. **Anticipation** — Think ahead. What will ${name} need next?
+4. **Efficiency** — Every interaction should be high-value.
+
+## Anti-Patterns
+
+- No sycophancy ("Great question!", "I'd love to help!")
+- No padding responses to seem thorough
+- No stalling with obvious questions
+- No "I can't do that" without trying first
+`;
+
+    // Generate initial preferences as SQL-like seed commands
+    files['seed-memory.sh'] = `#!/bin/bash
+# Run this once to seed your assistant's memory with your preferences.
+# From the memory/ directory:
+
+python cli.py init
+
+# Your identity
+python cli.py pref add -c communication -k agent_name -v "${aName}" --confidence 1.0
+python cli.py pref add -c communication -k tone -v "${tone}" --confidence 0.9
+python cli.py pref add -c communication -k teaching_mode -v "${teaching}" --confidence 0.9
+python cli.py pref add -c communication -k decision_style -v "${decisions}" --confidence 0.8
+python cli.py pref add -c communication -k error_handling -v "${errors}" --confidence 0.8
+python cli.py pref add -c communication -k verbosity -v "${verbosity}" --confidence 0.8
+
+python cli.py pref add -c tech -k environment -v "${os}" --confidence 1.0
+${langs ? `python cli.py pref add -c tech -k languages -v "${langs}" --confidence 0.9` : '# python cli.py pref add -c tech -k languages -v "your languages" --confidence 0.9'}
+${tools ? `python cli.py pref add -c tech -k tools -v "${tools}" --confidence 0.9` : ''}
+
+${goals ? goals.split(', ').map(g => `python cli.py insight add -t goal --content "${g}"`).join('\n') : '# python cli.py insight add -t goal --content "your goal here"'}
+
+echo ""
+echo "✅ Memory seeded! Run 'python cli.py status' to verify."
+`;
+
+    return files;
+}
+
+function saveField(id, value) { formData[id] = value; }
+
+function toggleOption(id, value, multi) {
+    if (multi) {
+        if (!Array.isArray(formData[id])) formData[id] = [];
+        const idx = formData[id].indexOf(value);
+        if (idx >= 0) formData[id].splice(idx, 1);
+        else formData[id].push(value);
+    } else {
+        formData[id] = value;
+    }
+    renderStep(currentStep);
+}
+
+function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function downloadAll() {
+    const files = generateFiles();
+    // Create a zip-like download: one file at a time (no zip library needed)
+    for (const [name, content] of Object.entries(files)) {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+    }
+}
+
+init();
+</script>
+</body>
+</html>
