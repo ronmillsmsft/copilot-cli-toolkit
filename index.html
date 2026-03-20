@@ -392,34 +392,21 @@ section{padding:48px 0}
   <div class="card" style="border-left:3px solid #f59e0b">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
       <span class="step-num" style="background:#f59e0b">4</span>
-      <span style="color:#e2e8f0;font-size:1rem;font-weight:600">Open PowerShell and launch Copilot CLI</span>
+       <span style="color:#e2e8f0;font-size:1rem;font-weight:600">Open PowerShell and launch Copilot CLI</span>
     </div>
     <p style="color:#94a3b8;font-size:0.9rem;line-height:1.7;margin-bottom:16px">
       Open <strong style="color:#e2e8f0">PowerShell (64-bit)</strong>. This is important: Copilot CLI runs as a terminal agent and needs a full 64-bit PowerShell session for tool execution, file access, and process management. The default Windows Terminal with PowerShell works well.
     </p>
 
-    <div class="launch-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <!-- Option A -->
-      <div style="background:#0f1117;border:1px solid #2a2d3a;border-top:3px solid #3b82f6;border-radius:8px;padding:20px">
-        <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#3b82f6;margin-bottom:10px">Option A: GitHub Copilot CLI</div>
-        <div class="code-block" style="border-left-color:#3b82f6">gh copilot</div>
-        <p style="color:#94a3b8;font-size:0.85rem;line-height:1.6;margin:10px 0">The built-in CLI agent from GitHub. Included with your GitHub Copilot subscription. Supports custom instructions, tool use, and session management.</p>
-        <a href="https://docs.github.com/en/copilot/github-copilot-in-the-cli" target="_blank" rel="noopener" style="font-size:0.82rem;color:#3b82f6">Learn more about GitHub Copilot CLI &rarr;</a>
-      </div>
-      <!-- Option B -->
-      <div style="background:#0f1117;border:1px solid #2a2d3a;border-top:3px solid #7c3aed;border-radius:8px;padding:20px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <span style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#7c3aed">Option B: Agency CLI</span>
-          <span style="font-size:0.65rem;font-weight:600;background:rgba(124,58,237,0.2);color:#a78bfa;padding:2px 8px;border-radius:10px">Enhanced</span>
-        </div>
-        <div class="code-block" style="border-left-color:#7c3aed">agency copilot</div>
-        <p style="color:#94a3b8;font-size:0.85rem;line-height:1.6;margin:10px 0">An enhanced wrapper with plugin support, skills, hooks, and multi-agent capabilities. Adds session learnings, notifications, and automation on top of the core Copilot CLI experience.</p>
-        <a href="https://github.com/nicholasgriffintn/agency" target="_blank" rel="noopener" style="font-size:0.82rem;color:#7c3aed">Learn more about Agency CLI &rarr;</a>
-      </div>
+    <div style="background:#0f1117;border:1px solid #2a2d3a;border-top:3px solid #3b82f6;border-radius:8px;padding:20px;margin-bottom:16px">
+      <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#3b82f6;margin-bottom:10px">GitHub Copilot CLI</div>
+      <div class="code-block" style="border-left-color:#3b82f6">gh copilot</div>
+      <p style="color:#94a3b8;font-size:0.85rem;line-height:1.6;margin:10px 0">The built-in CLI agent from GitHub. Included with your GitHub Copilot subscription. Supports custom instructions, tool use, and session management.</p>
+      <a href="https://docs.github.com/en/copilot/github-copilot-in-the-cli" target="_blank" rel="noopener" style="font-size:0.82rem;color:#3b82f6">Learn more about GitHub Copilot CLI &rarr;</a>
     </div>
 
     <p style="color:#64748b;font-size:0.82rem;line-height:1.6">
-      Both options work with this toolkit. Start with <code style="color:#3b82f6">gh copilot</code> if you're new. Upgrade to <code style="color:#7c3aed">agency copilot</code> when you want plugin extensibility.
+      Navigate to your workspace folder first, then run <code style="color:#3b82f6">gh copilot</code>. Your assistant reads instruction files from the current directory automatically.
     </p>
   </div>
 </div>
