@@ -274,14 +274,14 @@ function renderPrereqs() {
                     <p style="font-size:0.82rem;color:var(--muted);margin-left:24px">
                         This is how you talk to your AI assistant in the terminal. You need a GitHub account with a Copilot subscription.
                     </p>
-                    <div style="margin-left:24px;margin-top:6px;display:flex;gap:12px;flex-wrap:wrap">
-                        <a href="https://cli.github.com/" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Install GitHub CLI &#8599;</a>
-                        <a href="https://docs.github.com/en/copilot/github-copilot-in-the-cli" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Set up Copilot in CLI &#8599;</a>
-                    </div>
                     <div style="margin-left:24px;margin-top:8px;padding:8px 12px;background:var(--bg);border-radius:6px">
                         <p style="font-size:0.78rem;color:var(--muted);margin:0">
                             <strong style="color:var(--text)">Quick check:</strong> Open PowerShell and type <code>gh --version</code>. If you see a version number, you're good. Then run <code>gh extension install github/gh-copilot</code> to add Copilot.
                         </p>
+                    </div>
+                    <div style="margin-left:24px;margin-top:6px;display:flex;gap:12px;flex-wrap:wrap">
+                        <a href="https://cli.github.com/" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Install GitHub CLI &#8599;</a>
+                        <a href="https://docs.github.com/en/copilot/github-copilot-in-the-cli" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Set up Copilot in CLI &#8599;</a>
                     </div>
                 </div>
 
@@ -294,13 +294,13 @@ function renderPrereqs() {
                     <p style="font-size:0.82rem;color:var(--muted);margin-left:24px">
                         Powers the memory system and workflow tools. Python comes with SQLite built in, so no database setup is needed.
                     </p>
-                    <div style="margin-left:24px;margin-top:6px">
-                        <a href="https://www.python.org/downloads/" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Download Python &#8599;</a>
-                    </div>
                     <div style="margin-left:24px;margin-top:8px;padding:8px 12px;background:var(--bg);border-radius:6px">
                         <p style="font-size:0.78rem;color:var(--muted);margin:0">
                             <strong style="color:var(--text)">Quick check:</strong> Open PowerShell and type <code>python --version</code>. If you see "Python 3.10" or higher, you're set. During install, check the box that says <strong>"Add Python to PATH"</strong>.
                         </p>
+                    </div>
+                    <div style="margin-left:24px;margin-top:6px">
+                        <a href="https://www.python.org/downloads/" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Download Python &#8599;</a>
                     </div>
                 </div>
 
@@ -313,6 +313,11 @@ function renderPrereqs() {
                     <p style="font-size:0.82rem;color:var(--muted);margin-left:24px">
                         Useful for cloning the toolkit repo and getting updates. Not required if you download files manually from this wizard.
                     </p>
+                    <div style="margin-left:24px;margin-top:8px;padding:8px 12px;background:var(--bg);border-radius:6px">
+                        <p style="font-size:0.78rem;color:var(--muted);margin:0">
+                            <strong style="color:var(--text)">Quick check:</strong> Open PowerShell and type <code>git --version</code>. If you see a version number, it's already installed.
+                        </p>
+                    </div>
                     <div style="margin-left:24px;margin-top:6px">
                         <a href="https://git-scm.com/downloads" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Download Git &#8599;</a>
                     </div>
