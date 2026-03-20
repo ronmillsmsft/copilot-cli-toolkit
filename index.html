@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copilot CLI Toolkit - Build a Persistent AI Assistant</title>
+  <meta name="description" content="Build a persistent AI assistant that remembers you, automates your workflows, and gets smarter every session. No frameworks, no cloud services, just results.">
+  <meta property="og:title" content="Copilot CLI Toolkit">
+  <meta property="og:description" content="Build a persistent AI assistant that remembers you, automates your workflows, and gets smarter every session.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ronmillsmsft.github.io/copilot-cli-toolkit/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Copilot CLI Toolkit">
+  <meta name="twitter:description" content="Build a persistent AI assistant that remembers you, automates your workflows, and gets smarter every session.">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-top: #0a0e1a;
+      --bg-bottom: #050810;
+      --card-bg: #111827;
+      --card-border: #1e293b;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --accent-teal: #10b981;
+      --accent-yellow: #f59e0b;
+      --accent-red: #ef4444;
+      --text-primary: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius: 12px;
+      --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-stack);
+      background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-size: 1rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      padding: 4rem 0;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+    }
+
+    .text-muted {
+      color: var(--text-muted);
+    }
+
+    .text-dim {
+      color: var(--text-dim);
+    }
+
+    .label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Fade-in animation */
+    .fade-section {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .fade-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==================== HERO ==================== */
+    .hero {
+      position: relative;
+      padding: 6rem 0 4rem;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.12) 0%, rgba(6,182,212,0.06) 40%, transparent 70%);
+      animation: heroPulse 8s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes heroPulse {
+      0% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+      100% { opacity: 0.7; transform: scale(1.02); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto 1rem;
+      line-height: 1.7;
+    }
+
+    .hero .tagline {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-stack);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 28px rgba(59,130,246,0.45);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--text-muted);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    /* ==================== KPI TILES ==================== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .kpi-card.blue { border-top: 3px solid var(--accent-blue); }
+    .kpi-card.purple { border-top: 3px solid var(--accent-purple); }
+    .kpi-card.cyan { border-top: 3px solid var(--accent-cyan); }
+    .kpi-card.teal { border-top: 3px solid var(--accent-teal); }
+    .kpi-card.yellow { border-top: 3px solid var(--accent-yellow); }
+
+    .kpi-icon {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .kpi-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .kpi-card.blue .kpi-number { color: var(--accent-blue); }
+    .kpi-card.purple .kpi-number { color: var(--accent-purple); }
+    .kpi-card.cyan .kpi-number { color: var(--accent-cyan); }
+    .kpi-card.teal .kpi-number { color: var(--accent-teal); }
+    .kpi-card.yellow .kpi-number { color: var(--accent-yellow); }
+
+    .kpi-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    .kpi-subtitle {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    /* ==================== BEFORE / AFTER ==================== */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .compare-card {
+      border-radius: var(--radius);
+      padding: 2rem;
+      border: 1px solid var(--card-border);
+    }
+
+    .compare-card.before {
+      background: linear-gradient(135deg, rgba(239,68,68,0.06), rgba(17,24,39,1));
+      border-color: rgba(239,68,68,0.2);
+    }
+
+    .compare-card.after {
+      background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(17,24,39,1));
+      border-color: rgba(59,130,246,0.25);
+    }
+
+    .compare-card h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+    }
+
+    .compare-card.before h3 { color: var(--accent-red); }
+    .compare-card.after h3 { color: var(--accent-blue); }
+
+    .compare-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .compare-card ul li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .compare-card.before ul li::before {
+      content: '✗';
+      color: var(--accent-red);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .compare-card.after ul li::before {
+      content: '✓';
+      color: var(--accent-blue);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ==================== HOW IT WORKS (TIMELINE) ==================== */
+    .timeline {
+      position: relative;
+      padding-left: 3rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--accent-teal), var(--accent-blue), var(--accent-yellow), var(--accent-red));
+      border-radius: 1px;
+    }
+
+    .timeline-stop {
+      position: relative;
+      margin-bottom: 2.5rem;
+    }
+
+    .timeline-stop:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -2.65rem;
+      top: 0.3rem;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 3px solid;
+      background: var(--bg-top);
+      z-index: 1;
+    }
+
+    .timeline-dot.green { border-color: var(--accent-teal); box-shadow: 0 0 10px rgba(16,185,129,0.4); }
+    .timeline-dot.blue { border-color: var(--accent-blue); box-shadow: 0 0 10px rgba(59,130,246,0.4); }
+    .timeline-dot.yellow { border-color: var(--accent-yellow); box-shadow: 0 0 10px rgba(245,158,11,0.4); }
+    .timeline-dot.red { border-color: var(--accent-red); box-shadow: 0 0 10px rgba(239,68,68,0.4); }
+
+    .timeline-stop .card {
+      padding: 1.5rem 2rem;
+    }
+
+    .timeline-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .timeline-header h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .tier-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tier-badge.green { background: rgba(16,185,129,0.15); color: var(--accent-teal); }
+    .tier-badge.blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+    .tier-badge.yellow { background: rgba(245,158,11,0.15); color: var(--accent-yellow); }
+    .tier-badge.red { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+
+    .coming-soon-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(239,68,68,0.15);
+      color: var(--accent-red);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .timeline-stop .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .tier-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+    }
+
+    .tier-details span {
+      color: var(--text-dim);
+    }
+
+    .tier-details strong {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ==================== QUICK START ==================== */
+    #quickstart .card {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .step-content p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    code {
+      background: rgba(59,130,246,0.1);
+      color: var(--accent-cyan);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    }
+
+    .alt-path {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--card-border);
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    .alt-path a {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+
+    .alt-path a:hover {
+      text-decoration: underline;
+    }
+
+    /* ==================== ROLE CARDS ==================== */
+    .role-intro {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .role-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .role-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .role-card.blue { border-left: 3px solid var(--accent-blue); }
+    .role-card.green { border-left: 3px solid var(--accent-teal); }
+    .role-card.purple { border-left: 3px solid var(--accent-purple); }
+    .role-card.cyan { border-left: 3px solid var(--accent-cyan); }
+
+    .role-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1rem;
+    }
+
+    .role-card-header .role-icon {
+      font-size: 1.5rem;
+    }
+
+    .role-card-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .role-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .role-card ul li {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding-left: 1.2rem;
+      position: relative;
+    }
+
+    .role-card ul li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    .role-card .recommended {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* ==================== SESSION LIFECYCLE ==================== */
+    .lifecycle-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .lifecycle-step {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .lifecycle-step::after {
+      content: '→';
+      position: absolute;
+      right: -0.7rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .lifecycle-step:last-child::after {
+      display: none;
+    }
+
+    .lifecycle-step .lc-num {
+      font-size: 1.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .lifecycle-step h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .lifecycle-step p {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+
+    .growth-template {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .growth-template h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--accent-cyan);
+    }
+
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .checklist li {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .checklist li .check {
+      color: var(--accent-teal);
+      font-weight: 600;
+    }
+
+    .callout {
+      background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(6,182,212,0.05));
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    /* ==================== PRINCIPLES ==================== */
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .principle-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      transition: border-color 0.3s ease;
+    }
+
+    .principle-card:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .principle-card .principle-icon {
+      font-size: 1.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .principle-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .principle-card p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* ==================== REQUIREMENTS ==================== */
+    .requirements-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      list-style: none;
+    }
+
+    .requirements-list li {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.6rem 1.1rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    /* ==================== FOOTER ==================== */
+    footer {
+      padding: 3rem 0 2rem;
+      border-top: 1px solid var(--card-border);
+      text-align: center;
+    }
+
+    footer p {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      margin-bottom: 0.4rem;
+    }
+
+    footer a {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 900px) {
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .role-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lifecycle-steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .lifecycle-step:nth-child(2)::after,
+      .lifecycle-step:last-child::after {
+        display: none;
+      }
+
+      .principles-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      section {
+        padding: 3rem 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 1.85rem;
+      }
+
+      .hero .subtitle {
+        font-size: 1.05rem;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .kpi-number {
+        font-size: 2rem;
+      }
+
+      .timeline {
+        padding-left: 2.5rem;
+      }
+
+      .timeline-dot {
+        left: -2.15rem;
+        width: 18px;
+        height: 18px;
+      }
+
+      .lifecycle-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .lifecycle-step::after {
+        display: none;
+      }
+
+      .principles-grid {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 2.5rem 0;
+      }
+
+      .section-title {
+        font-size: 1.4rem;
+      }
+
+      .card {
+        padding: 1.25rem;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== HERO ==================== -->
+  <header class="hero">
+    <div class="container hero-content">
+      <h1>Copilot CLI Toolkit</h1>
+      <p class="subtitle">Build a persistent AI assistant that remembers you, automates your workflows, and gets smarter every session.</p>
+      <p class="tagline">Built by a busy PM who needed to save time, not learn a framework.</p>
+      <div class="hero-buttons">
+        <a href="#quickstart" class="btn btn-primary">Get Started</a>
+        <a href="https://github.com/ronmillsmsft/copilot-cli-toolkit" target="_blank" rel="noopener" class="btn btn-secondary">Browse on GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== KPI TILES ==================== -->
+  <section class="fade-section" aria-label="Impact metrics">
+    <div class="container">
+      <div class="kpi-grid">
+        <article class="kpi-card blue">
+          <div class="kpi-icon">💬</div>
+          <div class="kpi-number" data-target="88" data-suffix="+">0</div>
+          <div class="kpi-label">Sessions</div>
+        </article>
+        <article class="kpi-card purple">
+          <div class="kpi-icon">🧠</div>
+          <div class="kpi-number" data-target="115" data-suffix="">0</div>
+          <div class="kpi-label">Preferences Learned</div>
+        </article>
+        <article class="kpi-card cyan">
+          <div class="kpi-icon">💡</div>
+          <div class="kpi-number" data-target="280" data-suffix="+">0</div>
+          <div class="kpi-label">Insights Tracked</div>
+        </article>
+        <article class="kpi-card teal">
+          <div class="kpi-icon">🤖</div>
+          <div class="kpi-number" data-target="11" data-suffix="">0</div>
+          <div class="kpi-label">Specialized Agents</div>
+        </article>
+        <article class="kpi-card yellow">
+          <div class="kpi-icon">⏱️</div>
+          <div class="kpi-number" data-target="24" data-suffix="+">0</div>
+          <div class="kpi-label">Hours Saved</div>
+        </article>
+      </div>
+      <p class="kpi-subtitle">Real results from daily production use managing 15+ reports across a 130-item ADO backlog.</p>
+    </div>
+  </section>
+
+  <!-- ==================== BEFORE / AFTER ==================== -->
+  <section class="fade-section" aria-label="Before and after comparison">
+    <div class="container">
+      <h2 class="section-title">The Problem</h2>
+      <div class="compare-grid">
+        <div class="compare-card before">
+          <h3>Without Toolkit</h3>
+          <ul>
+            <li>AI forgets everything between sessions</li>
+            <li>Generic responses every time</li>
+            <li>You do the work, AI just advises</li>
+            <li>Manual setup every conversation</li>
+            <li>Scattered notes, lost context</li>
+          </ul>
+        </div>
+        <div class="compare-card after">
+          <h3>With Toolkit</h3>
+          <ul>
+            <li>Remembers preferences, decisions, patterns</li>
+            <li>Personalized to your role and style</li>
+            <li>AI executes end-to-end, you review</li>
+            <li>Boot sequence loads context automatically</li>
+            <li>Persistent memory across all sessions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HOW IT WORKS ==================== -->
+  <section class="fade-section" aria-label="How it works">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <div class="timeline">
+
+        <!-- Tier 1 -->
+        <div class="timeline-stop">
+          <div class="timeline-dot green"></div>
+          <div class="card">
+            <div class="timeline-header">
+              <span class="tier-badge green">Tier 1</span>
+              <h3>Start Here</h3>
+              <span class="label">5 min</span>
+            </div>
+            <p>Give your AI a personality. Drop in a custom instruction file and your assistant greets you by name, matches your tone, and follows your rules.</p>
+            <div class="tier-details">
+              <span><strong>What you get:</strong> Consistent AI behavior, personalized tone, custom rules</span>
+              <span><strong>Files:</strong> <code>copilot-instructions.md</code></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tier 2 -->
+        <div class="timeline-stop">
+          <div class="timeline-dot blue"></div>
+          <div class="card">
+            <div class="timeline-header">
+              <span class="tier-badge blue">Tier 2</span>
+              <h3>Build the Foundation</h3>
+              <span class="label">15 min</span>
+            </div>
+            <p>Add persistent memory. Your assistant remembers preferences, tracks decisions, and builds context session over session.</p>
+            <div class="tier-details">
+              <span><strong>What you get:</strong> SQLite memory DB, preferences, insights, conversation history, FTS5 search</span>
+              <span><strong>Files:</strong> <code>memory/cli.py</code>, instruction files (<code>SOUL.md</code>, <code>USER.md</code>, <code>AGENTS.md</code>, etc.)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tier 3 -->
+        <div class="timeline-stop">
+          <div class="timeline-dot yellow"></div>
+          <div class="card">
+            <div class="timeline-header">
+              <span class="tier-badge yellow">Tier 3</span>
+              <h3>Automate Your Work</h3>
+              <span class="label">30 min</span>
+            </div>
+            <p>Turn routine tasks into one-line commands. Meeting prep, standup scans, action tracking, daily health checks.</p>
+            <div class="tier-details">
+              <span><strong>What you get:</strong> 4 workflow tools (Action Tracker, Meeting Prep, Standup Prep, Daily Ops)</span>
+              <span><strong>Pattern:</strong> Each tool uses SQLite, runs from CLI, integrates with your AI assistant</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tier 4 -->
+        <div class="timeline-stop">
+          <div class="timeline-dot red"></div>
+          <div class="card">
+            <div class="timeline-header">
+              <span class="tier-badge red">Tier 4</span>
+              <h3>Scale Up</h3>
+              <span class="label">1 hour</span>
+              <span class="coming-soon-badge">Coming Soon</span>
+            </div>
+            <p>Multi-agent orchestration. Specialized agents with trust scoring, an ops dashboard, and MCP server integrations.</p>
+            <div class="tier-details">
+              <span><strong>What you get:</strong> Agent engine, governance, Streamlit dashboard, MCP configs</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== QUICK START ==================== -->
+  <section id="quickstart" class="fade-section" aria-label="Quick start guide">
+    <div class="container">
+      <h2 class="section-title">Quick Start (5 Minutes)</h2>
+      <div class="card">
+        <div class="steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Clone the repo</h4>
+              <p><code>git clone https://github.com/ronmillsmsft/copilot-cli-toolkit.git</code></p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Run the Setup Wizard</h4>
+              <p>Open <code>starter/setup-wizard.html</code> in your browser</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Initialize memory</h4>
+              <p><code>cd memory && python cli.py status</code></p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>Launch Copilot CLI</h4>
+              <p>Your assistant now has persistent memory</p>
+            </div>
+          </div>
+        </div>
+        <div class="alt-path">
+          Prefer a guided experience? Open the <a href="starter/setup-wizard.html">Setup Wizard</a> in your browser. No command line needed.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CHOOSE YOUR PATH ==================== -->
+  <section class="fade-section" aria-label="Role-based recommendations">
+    <div class="container">
+      <h2 class="section-title">Choose Your Path</h2>
+      <p class="role-intro">The toolkit adapts to how you work. Pick your role to see recommended workflows.</p>
+      <div class="role-grid">
+
+        <article class="role-card blue">
+          <div class="role-card-header">
+            <span class="role-icon">📋</span>
+            <h3>Program Manager</h3>
+          </div>
+          <ul>
+            <li>Meeting prep automation</li>
+            <li>Action item tracking</li>
+            <li>Stakeholder communication</li>
+          </ul>
+          <div class="recommended">Recommended: Tiers 1-3</div>
+        </article>
+
+        <article class="role-card green">
+          <div class="role-card-header">
+            <span class="role-icon">💻</span>
+            <h3>Developer / Engineer</h3>
+          </div>
+          <ul>
+            <li>Code review workflows</li>
+            <li>PR management</li>
+            <li>Build/test automation</li>
+          </ul>
+          <div class="recommended">Recommended: Tiers 1-2 + custom workflows</div>
+        </article>
+
+        <article class="role-card purple">
+          <div class="role-card-header">
+            <span class="role-icon">🔧</span>
+            <h3>TPM / Technical PM</h3>
+          </div>
+          <ul>
+            <li>Cross-team coordination</li>
+            <li>ADO/Jira integration</li>
+            <li>Status reporting</li>
+          </ul>
+          <div class="recommended">Recommended: Tiers 1-4</div>
+        </article>
+
+        <article class="role-card cyan">
+          <div class="role-card-header">
+            <span class="role-icon">📊</span>
+            <h3>Analyst / Data</h3>
+          </div>
+          <ul>
+            <li>Data pipeline monitoring</li>
+            <li>Report generation</li>
+            <li>Dashboard management</li>
+          </ul>
+          <div class="recommended">Recommended: Tiers 1-3</div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SESSION LIFECYCLE ==================== -->
+  <section class="fade-section" aria-label="Session lifecycle">
+    <div class="container">
+      <h2 class="section-title">Growing Smarter Every Session</h2>
+
+      <div class="lifecycle-steps">
+        <div class="lifecycle-step">
+          <div class="lc-num">🚀</div>
+          <h4>Boot</h4>
+          <p>Memory loads, daily ops scan runs, AI greets you with context</p>
+        </div>
+        <div class="lifecycle-step">
+          <div class="lc-num">⚡</div>
+          <h4>Work</h4>
+          <p>AI executes tasks, learns your preferences, tracks decisions</p>
+        </div>
+        <div class="lifecycle-step">
+          <div class="lc-num">💾</div>
+          <h4>Close</h4>
+          <p>Session is logged, insights saved, memory updated</p>
+        </div>
+        <div class="lifecycle-step">
+          <div class="lc-num">🔍</div>
+          <h4>Index</h4>
+          <p>Use <code>/reindex</code> to rebuild your local session index for fast retrieval</p>
+        </div>
+      </div>
+
+      <div class="growth-template">
+        <h3>Session Close-Out Checklist</h3>
+        <ul class="checklist">
+          <li><span class="check">✅</span> Log conversation summary to memory</li>
+          <li><span class="check">✅</span> Save new preferences discovered</li>
+          <li><span class="check">✅</span> Save new insights (decisions, patterns, goals)</li>
+          <li><span class="check">✅</span> Update instruction files if workflows changed</li>
+          <li><span class="check">✅</span> Run <code>/reindex</code> to rebuild session index</li>
+        </ul>
+      </div>
+
+      <div class="callout">
+        Over time, this creates a compound effect. Each session builds on the last. After 30 sessions, your AI knows your tool preferences, stakeholder names, project history, and communication style without being told.
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== DESIGN PRINCIPLES ==================== -->
+  <section class="fade-section" aria-label="Design principles">
+    <div class="container">
+      <h2 class="section-title">Design Principles</h2>
+      <div class="principles-grid">
+        <article class="principle-card">
+          <div class="principle-icon">🎯</div>
+          <h3>Action Over Discussion</h3>
+          <p>Default to doing, not describing what could be done</p>
+        </article>
+        <article class="principle-card">
+          <div class="principle-icon">🔗</div>
+          <h3>Own End-to-End</h3>
+          <p>When the assistant takes a task, it owns it to completion</p>
+        </article>
+        <article class="principle-card">
+          <div class="principle-icon">📖</div>
+          <h3>Teach While Doing</h3>
+          <p>Explain the why, not just the what</p>
+        </article>
+        <article class="principle-card">
+          <div class="principle-icon">🧠</div>
+          <h3>Persistent Context</h3>
+          <p>Every session builds on the last</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== REQUIREMENTS ==================== -->
+  <section class="fade-section" aria-label="Requirements">
+    <div class="container">
+      <h2 class="section-title">Requirements</h2>
+      <ul class="requirements-list">
+        <li>GitHub Copilot CLI (with custom instructions support)</li>
+        <li>Python 3.10+</li>
+        <li>SQLite (included with Python)</li>
+        <li>No cloud services</li>
+        <li>No API keys</li>
+        <li>No external dependencies</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer>
+    <div class="container">
+      <p>Built by Ron Mills with Max Headroom 📺</p>
+      <p>MIT License &middot; <a href="https://github.com/ronmillsmsft/copilot-cli-toolkit" target="_blank" rel="noopener">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+        anchor.addEventListener('click', function (e) {
+          var target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+
+      // Fade-in on scroll with IntersectionObserver
+      var fadeSections = document.querySelectorAll('.fade-section');
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12 });
+
+        fadeSections.forEach(function (section) {
+          observer.observe(section);
+        });
+      } else {
+        // Fallback: show all sections immediately
+        fadeSections.forEach(function (section) {
+          section.classList.add('visible');
+        });
+      }
+
+      // KPI counter animation
+      var kpiAnimated = false;
+      var kpiNumbers = document.querySelectorAll('.kpi-number[data-target]');
+
+      function animateCounters() {
+        if (kpiAnimated) return;
+        kpiAnimated = true;
+
+        kpiNumbers.forEach(function (el) {
+          var target = parseInt(el.getAttribute('data-target'), 10);
+          var suffix = el.getAttribute('data-suffix') || '';
+          var duration = 1600;
+          var startTime = null;
+
+          function step(timestamp) {
+            if (!startTime) startTime = timestamp;
+            var progress = Math.min((timestamp - startTime) / duration, 1);
+            // Ease-out cubic
+            var eased = 1 - Math.pow(1 - progress, 3);
+            var current = Math.floor(eased * target);
+            el.textContent = current + suffix;
+            if (progress < 1) {
+              requestAnimationFrame(step);
+            } else {
+              el.textContent = target + suffix;
+            }
+          }
+
+          requestAnimationFrame(step);
+        });
+      }
+
+      // Trigger counter animation when KPI section enters viewport
+      var kpiGrid = document.querySelector('.kpi-grid');
+      if (kpiGrid && 'IntersectionObserver' in window) {
+        var kpiObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              animateCounters();
+              kpiObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.3 });
+        kpiObserver.observe(kpiGrid);
+      } else {
+        animateCounters();
+      }
+    })();
+  </script>
+</body>
+</html>
