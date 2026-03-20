@@ -10,3 +10,7 @@ __pycache__/
 *.tmp
 .DS_Store
 Thumbs.db
+
+# Toolkit updater local files
+.toolkit-version
+.toolkit-backup/
