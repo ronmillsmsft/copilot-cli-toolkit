@@ -270,6 +270,9 @@ function renderReview() {
     const copyInstr = isWin
         ? `Move the downloaded files from your <strong>Downloads</strong> folder into <code>${fullPath}</code>. You can do this in File Explorer: open Downloads, select the 4 files, cut them (Ctrl+X), navigate to <code>${fullPath}</code>, and paste (Ctrl+V).`
         : `Move the downloaded files from your <strong>Downloads</strong> folder into <code>~/${folderName}</code>. You can drag them in Finder or run: <code>mv ~/Downloads/copilot-instructions.md ~/Downloads/USER.md ~/Downloads/SOUL.md ~/Downloads/seed-memory.sh ~/${folderName}/</code>`;
+    const moveCmd = isWin
+        ? `Move-Item $env:USERPROFILE\\Downloads\\copilot-instructions.md, $env:USERPROFILE\\Downloads\\USER.md, $env:USERPROFILE\\Downloads\\SOUL.md, $env:USERPROFILE\\Downloads\\seed-memory.sh -Destination ${fullPath}`
+        : `mv ~/Downloads/copilot-instructions.md ~/Downloads/USER.md ~/Downloads/SOUL.md ~/Downloads/seed-memory.sh ~/${folderName}/`;
 
     return `
         <div class="card">
@@ -283,10 +286,10 @@ function renderReview() {
             <div class="file-preview" id="filePreview">${escHtml(files[firstFile])}</div>
             <div class="btn-row">
                 <button class="btn btn-secondary" onclick="renderStep(${currentStep - 1})">&#8592; Back</button>
-                <button class="btn btn-success" onclick="downloadAndShowNext()">&#11015; Download All Files</button>
+                <button class="btn btn-success" onclick="downloadAll()">&#11015; Download All Files</button>
             </div>
         </div>
-        <div class="card hidden" id="nextSteps" style="margin-top:24px">
+        <div class="card" id="nextSteps" style="margin-top:24px">
             <h2>&#127937; What to Do Next</h2>
             <div class="subtitle">Follow these steps in order. Take your time.</div>
 
@@ -315,7 +318,11 @@ function renderReview() {
                         <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">
                             ${copyInstr}
                         </p>
-                        <p style="color:var(--muted);font-size:0.82rem;margin-top:6px">
+                        <p style="color:var(--muted);font-size:0.82rem;margin-top:8px">
+                            Or if you already have ${terminalName} open, you can copy and paste this command:
+                        </p>
+                        <div class="file-preview" style="max-height:none;margin-top:8px;font-size:0.82rem">${escHtml(moveCmd)}</div>
+                        <p style="color:var(--muted);font-size:0.82rem;margin-top:8px">
                             You should have these 4 files in your folder:
                         </p>
                         <ul style="color:var(--muted);font-size:0.85rem;margin:8px 0 0 16px">
