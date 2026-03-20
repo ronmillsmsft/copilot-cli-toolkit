@@ -112,6 +112,11 @@
 <script>
 const STEPS = [
     {
+        title: "Getting Ready",
+        subtitle: "Let's make sure you have what you need before we start.",
+        fields: [] // rendered custom
+    },
+    {
         title: "About You",
         subtitle: "Tell your assistant who it's working with.",
         fields: [
@@ -165,7 +170,7 @@ const STEPS = [
     }
 ];
 
-const STEP_NAMES = ["You", "Assistant", "Work", "Prefs", "Done"];
+const STEP_NAMES = ["Setup", "You", "Assistant", "Work", "Prefs", "Done"];
 
 let currentStep = 0;
 let formData = {};
@@ -197,6 +202,12 @@ function renderStep(idx) {
         return;
     }
 
+    // Custom render for "Getting Ready" prerequisites step
+    if (idx === 0) {
+        wizard.innerHTML = renderPrereqs();
+        return;
+    }
+
     let fieldsHtml = step.fields.map(f => {
         let input = '';
         const val = formData[f.id] || '';
@@ -221,6 +232,102 @@ function renderStep(idx) {
             <div class="btn-row">
                 <button class="btn btn-secondary ${idx === 0 ? 'hidden' : ''}" onclick="renderStep(${idx - 1})">← Back</button>
                 <button class="btn btn-primary" onclick="renderStep(${idx + 1})">Next →</button>
+            </div>
+        </div>`;
+}
+
+function renderPrereqs() {
+    // Prerequisites step: show what's needed at each tier with install links
+    return `
+        <div class="card">
+            <h2>Getting Ready</h2>
+            <div class="subtitle">Before we personalize your assistant, let's make sure you have the essentials installed.</div>
+
+            <div style="margin-top:20px">
+                <label>What level are you starting at?</label>
+                <div class="hint">Not sure? Pick "Just the basics" and you can add more later.</div>
+                <div class="option-group" style="flex-direction:column;gap:12px;margin-top:10px">
+                    <div class="option-btn ${formData.setupTier === 'basic' ? 'selected' : ''}" onclick="toggleOption('setupTier','basic',false)" style="text-align:left;padding:14px 18px">
+                        <strong style="display:block;margin-bottom:4px">&#127937; Just the basics (Tier 1)</strong>
+                        <span style="font-size:0.82rem;color:var(--muted)">Custom instructions only. Your AI gets a personality and rules. No coding needed.</span>
+                    </div>
+                    <div class="option-btn ${formData.setupTier === 'memory' ? 'selected' : ''}" onclick="toggleOption('setupTier','memory',false)" style="text-align:left;padding:14px 18px">
+                        <strong style="display:block;margin-bottom:4px">&#129504; Basics + Memory (Tier 2)</strong>
+                        <span style="font-size:0.82rem;color:var(--muted)">Your AI remembers you across sessions. Needs Python installed.</span>
+                    </div>
+                    <div class="option-btn ${formData.setupTier === 'full' ? 'selected' : ''}" onclick="toggleOption('setupTier','full',false)" style="text-align:left;padding:14px 18px">
+                        <strong style="display:block;margin-bottom:4px">&#128640; Full toolkit (Tier 3-4)</strong>
+                        <span style="font-size:0.82rem;color:var(--muted)">Memory + workflow automation + dashboard. Needs Python and optionally Streamlit.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:28px;padding:20px;background:var(--surface2);border-radius:8px">
+                <h3 style="font-size:0.95rem;color:var(--accent);margin-bottom:14px">&#9745; Prerequisites Checklist</h3>
+
+                <div style="margin-bottom:16px">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                        <span style="color:var(--green);font-size:1.1rem">&#9679;</span>
+                        <strong style="font-size:0.9rem">GitHub CLI with Copilot</strong>
+                        <span style="font-size:0.7rem;background:var(--red);color:#fff;padding:1px 8px;border-radius:8px;font-weight:600">Required</span>
+                    </div>
+                    <p style="font-size:0.82rem;color:var(--muted);margin-left:24px">
+                        This is how you talk to your AI assistant in the terminal. You need a GitHub account with a Copilot subscription.
+                    </p>
+                    <div style="margin-left:24px;margin-top:6px;display:flex;gap:12px;flex-wrap:wrap">
+                        <a href="https://cli.github.com/" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Install GitHub CLI &#8599;</a>
+                        <a href="https://docs.github.com/en/copilot/github-copilot-in-the-cli" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Set up Copilot in CLI &#8599;</a>
+                    </div>
+                    <div style="margin-left:24px;margin-top:8px;padding:8px 12px;background:var(--bg);border-radius:6px">
+                        <p style="font-size:0.78rem;color:var(--muted);margin:0">
+                            <strong style="color:var(--text)">Quick check:</strong> Open PowerShell and type <code>gh --version</code>. If you see a version number, you're good. Then run <code>gh extension install github/gh-copilot</code> to add Copilot.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:16px" id="prereq-python">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                        <span style="color:${formData.setupTier === 'basic' ? '#64748b' : 'var(--green)'};font-size:1.1rem">&#9679;</span>
+                        <strong style="font-size:0.9rem;${formData.setupTier === 'basic' ? 'color:#64748b' : ''}">Python 3.10+</strong>
+                        <span style="font-size:0.7rem;background:${formData.setupTier === 'basic' ? '#64748b' : 'var(--yellow)'};color:${formData.setupTier === 'basic' ? '#fff' : '#000'};padding:1px 8px;border-radius:8px;font-weight:600">${formData.setupTier === 'basic' ? 'Not needed yet' : 'Needed for Tier 2+'}</span>
+                    </div>
+                    <p style="font-size:0.82rem;color:var(--muted);margin-left:24px">
+                        Powers the memory system and workflow tools. Python comes with SQLite built in, so no database setup is needed.
+                    </p>
+                    <div style="margin-left:24px;margin-top:6px">
+                        <a href="https://www.python.org/downloads/" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Download Python &#8599;</a>
+                    </div>
+                    <div style="margin-left:24px;margin-top:8px;padding:8px 12px;background:var(--bg);border-radius:6px">
+                        <p style="font-size:0.78rem;color:var(--muted);margin:0">
+                            <strong style="color:var(--text)">Quick check:</strong> Open PowerShell and type <code>python --version</code>. If you see "Python 3.10" or higher, you're set. During install, check the box that says <strong>"Add Python to PATH"</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:8px">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                        <span style="color:#64748b;font-size:1.1rem">&#9679;</span>
+                        <strong style="font-size:0.9rem;color:#64748b">Git (optional)</strong>
+                        <span style="font-size:0.7rem;background:#64748b;color:#fff;padding:1px 8px;border-radius:8px;font-weight:600">Optional</span>
+                    </div>
+                    <p style="font-size:0.82rem;color:var(--muted);margin-left:24px">
+                        Useful for cloning the toolkit repo and getting updates. Not required if you download files manually from this wizard.
+                    </p>
+                    <div style="margin-left:24px;margin-top:6px">
+                        <a href="https://git-scm.com/downloads" target="_blank" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Download Git &#8599;</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:16px;padding:12px 16px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--green)">
+                <p style="font-size:0.82rem;color:var(--muted);margin:0">
+                    <strong style="color:var(--text)">Don't have everything yet?</strong> That's fine. You can complete this wizard now and install the tools before you use the files. The wizard generates config files that don't require anything to create.
+                </p>
+            </div>
+
+            <div class="btn-row">
+                <div></div>
+                <button class="btn btn-primary" onclick="renderStep(1)">Next &#8594;</button>
             </div>
         </div>`;
 }
