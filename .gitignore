@@ -2,6 +2,7 @@
 
 ## Ignore patterns
 memory.db
+*.db
 *.pyc
 __pycache__/
 .env
