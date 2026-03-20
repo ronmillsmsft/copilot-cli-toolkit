@@ -333,11 +333,12 @@ section{padding:48px 0}
 <div class="container">
   <div class="stats-row">
     <div class="stat-item"><div class="stat-number">4</div><div class="stat-label">Tiers</div></div>
-    <div class="stat-item"><div class="stat-number">9</div><div class="stat-label">Files</div></div>
-    <div class="stat-item"><div class="stat-number">5</div><div class="stat-label">Databases</div></div>
     <div class="stat-item"><div class="stat-number">0</div><div class="stat-label">Dependencies</div></div>
     <div class="stat-item"><div class="stat-number">4</div><div class="stat-label">Workflows</div></div>
-    <div class="stat-item"><div class="stat-number">&infin;</div><div class="stat-label">Possibilities</div></div>
+    <div class="stat-item"><div class="stat-number" id="gh-stars" style="color:#f59e0b">-</div><div class="stat-label">&#11088; Stars</div></div>
+    <div class="stat-item"><div class="stat-number" id="gh-forks" style="color:#8b5cf6">-</div><div class="stat-label">&#127860; Forks</div></div>
+    <div class="stat-item"><div class="stat-number" id="gh-commits" style="color:#06b6d4">-</div><div class="stat-label">&#128221; Commits</div></div>
+    <div class="stat-item"><div class="stat-number" id="gh-contributors" style="color:#10b981">-</div><div class="stat-label">&#128101; Contributors</div></div>
   </div>
 </div>
 </section>
@@ -828,6 +829,31 @@ function copyText(el){
       if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}
     });
   });
+  // Fetch live GitHub repo stats
+  var repo='ronmillsmsft/copilot-cli-toolkit';
+  fetch('https://api.github.com/repos/'+repo)
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d.stargazers_count!==undefined){
+        document.getElementById('gh-stars').textContent=d.stargazers_count;
+        document.getElementById('gh-forks').textContent=d.forks_count;
+      }
+    }).catch(function(){});
+  fetch('https://api.github.com/repos/'+repo+'/contributors?per_page=1&anon=true',{method:'HEAD'})
+    .then(function(r){
+      // GitHub returns total in Link header last page number
+      var link=r.headers.get('Link')||'';
+      var m=link.match(/page=(\d+)>;\s*rel="last"/);
+      if(m) document.getElementById('gh-contributors').textContent=m[1];
+      else return r.json?fetch('https://api.github.com/repos/'+repo+'/contributors?per_page=100').then(function(r2){return r2.json()}).then(function(arr){if(Array.isArray(arr))document.getElementById('gh-contributors').textContent=arr.length}):null;
+    }).catch(function(){});
+  fetch('https://api.github.com/repos/'+repo+'/commits?per_page=1',{method:'HEAD'})
+    .then(function(r){
+      var link=r.headers.get('Link')||'';
+      var m=link.match(/page=(\d+)>;\s*rel="last"/);
+      if(m) document.getElementById('gh-commits').textContent=m[1];
+      else fetch('https://api.github.com/repos/'+repo+'/commits?per_page=100').then(function(r2){return r2.json()}).then(function(arr){if(Array.isArray(arr))document.getElementById('gh-commits').textContent=arr.length});
+    }).catch(function(){});
 })();
 </script>
 </body>
