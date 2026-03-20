@@ -333,27 +333,68 @@ section{padding:48px 0}
 <!-- QUICK START -->
 <section id="quickstart" class="fade-section">
 <div class="container">
-  <div class="section-header"><div class="accent-bar teal"><h2>Quick Start</h2></div></div>
-  <div class="card">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-      <span class="step-num">1</span>
-      <span style="color:#94a3b8;font-size:0.9rem">Clone the repository</span>
+  <div class="section-header">
+    <div class="accent-bar teal">
+      <h2>Get Started in 5 Minutes</h2>
+      <div class="subtitle">Four steps. The first one does most of the work for you.</div>
     </div>
+  </div>
+
+  <!-- Step 1: Setup Wizard -->
+  <div class="card" style="border-left:3px solid #10b981;margin-bottom:20px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <span class="step-num" style="background:linear-gradient(135deg,#10b981,#06b6d4)">1</span>
+      <span style="color:#e2e8f0;font-size:1rem;font-weight:600">Personalize your assistant</span>
+    </div>
+    <p style="color:#94a3b8;font-size:0.9rem;line-height:1.7;margin-bottom:16px">
+      Before you install anything, tell your AI who you are and how you work. The setup wizard asks a few questions about your role, your tools, and your preferences, then generates all your config files ready to download. No command line needed.
+    </p>
+    <a href="starter/setup-wizard.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.95rem;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+      🧙 Launch Setup Wizard
+    </a>
+    <div style="margin-top:12px;padding:12px 16px;background:#0a0e14;border-radius:8px;border-left:3px solid #1a2340">
+      <p style="color:#64748b;font-size:0.8rem;font-style:italic;margin:0">
+        Why this matters: Your AI assistant is only as good as the context it has. A generic assistant gives generic answers. One that knows your name, role, tools, and communication style delivers personalized, high-value results from session one.
+      </p>
+    </div>
+  </div>
+
+  <!-- Step 2: Clone -->
+  <div class="card" style="border-left:3px solid #3b82f6;margin-bottom:20px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <span class="step-num" style="background:#3b82f6">2</span>
+      <span style="color:#e2e8f0;font-size:1rem;font-weight:600">Clone the toolkit</span>
+    </div>
+    <p style="color:#94a3b8;font-size:0.9rem;line-height:1.7;margin-bottom:12px">
+      Download the toolkit to your machine. This gives you the memory system, instruction templates, and all four workflow tools.
+    </p>
     <div class="code-block">git clone https://github.com/ronmillsmsft/copilot-cli-toolkit.git</div>
-    <div style="display:flex;align-items:center;gap:12px;margin:20px 0 16px">
-      <span class="step-num">2</span>
-      <span style="color:#94a3b8;font-size:0.9rem">Open the setup wizard in your browser</span>
+    <p style="color:#64748b;font-size:0.8rem;margin-top:8px">
+      Drop the config files from Step 1 into the appropriate folders. The wizard tells you exactly where each file goes.
+    </p>
+  </div>
+
+  <!-- Step 3: Initialize Memory -->
+  <div class="card" style="border-left:3px solid #8b5cf6;margin-bottom:20px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <span class="step-num" style="background:#8b5cf6">3</span>
+      <span style="color:#e2e8f0;font-size:1rem;font-weight:600">Initialize the memory system</span>
     </div>
-    <div class="code-block">starter/setup-wizard.html</div>
-    <div style="display:flex;align-items:center;gap:12px;margin:20px 0 16px">
-      <span class="step-num">3</span>
-      <span style="color:#94a3b8;font-size:0.9rem">Verify the memory system</span>
-    </div>
+    <p style="color:#94a3b8;font-size:0.9rem;line-height:1.7;margin-bottom:12px">
+      This creates your persistent memory database. From this point on, every session builds on the last. Preferences, decisions, and context accumulate automatically.
+    </p>
     <div class="code-block">cd memory &amp;&amp; python cli.py status</div>
-    <div style="display:flex;align-items:center;gap:12px;margin:20px 0 16px">
-      <span class="step-num">4</span>
-      <span style="color:#94a3b8;font-size:0.9rem">Launch Copilot CLI and start working</span>
+  </div>
+
+  <!-- Step 4: Launch -->
+  <div class="card" style="border-left:3px solid #f59e0b">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <span class="step-num" style="background:#f59e0b">4</span>
+      <span style="color:#e2e8f0;font-size:1rem;font-weight:600">Launch and start working</span>
     </div>
+    <p style="color:#94a3b8;font-size:0.9rem;line-height:1.7;margin-bottom:12px">
+      Open Copilot CLI. Your assistant greets you by name, knows your role, and follows your rules. After a few sessions, it will remember your project context, stakeholder names, and tool preferences without being told.
+    </p>
     <div class="code-block">copilot-cli</div>
   </div>
 </div>
