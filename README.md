@@ -128,7 +128,7 @@ Built and used daily by a PM managing 15+ Power BI reports across a 130+ item AD
 - **115 preferences** learned and applied automatically
 - **280 active insights** tracking decisions, patterns, and goals
 - **11 specialized agents** (CoreIdentity approvals, meeting prep, standup scan, etc.)
-- **24+ hours of manual work saved** (and counting)
+- **40+ hours of manual work saved** (and counting)
 
 ## Requirements
 
