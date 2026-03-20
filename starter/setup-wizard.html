@@ -77,7 +77,18 @@
     /* File preview */
     .file-preview { background: #0d1117; border: 1px solid var(--border); border-radius: 8px;
         padding: 16px; margin-top: 12px; font-family: 'Cascadia Code', 'Fira Code', monospace;
-        font-size: 0.8rem; white-space: pre-wrap; color: var(--green); max-height: 300px; overflow-y: auto; }
+        font-size: 0.8rem; white-space: pre-wrap; color: var(--green); max-height: 300px; overflow-y: auto;
+        position: relative; }
+    .cmd-copy { position: relative; cursor: pointer; }
+    .cmd-copy:hover { background: #141820; }
+    .cmd-copy .copy-btn {
+        position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+        background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+        color: var(--muted); font-size: 0.7rem; padding: 3px 10px; cursor: pointer;
+        font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+        transition: all 0.2s; }
+    .cmd-copy .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .cmd-copy .copy-btn.copied { color: var(--green); border-color: var(--green); }
     .file-tabs { display: flex; gap: 4px; margin-top: 16px; }
     .file-tab { padding: 6px 14px; background: var(--surface2); border: 1px solid var(--border);
         border-bottom: none; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 0.8rem; color: var(--muted); }
@@ -417,7 +428,7 @@ function renderReview() {
                         <p style="color:var(--muted);font-size:0.82rem;margin-top:6px">
                             You can create this folder in File Explorer (right-click > New > Folder) or in ${terminalName}:
                         </p>
-                        <div class="file-preview" style="max-height:none;margin-top:8px;font-size:0.85rem">${escHtml(mkdirCmd)}</div>
+                        <div class="file-preview cmd-copy" style="max-height:none;margin-top:8px;font-size:0.85rem"><span>${escHtml(mkdirCmd)}</span><button class="copy-btn" onclick="event.stopPropagation();copyCmd(this)">Copy</button></div>
                     </div>
                 </div>
             </div>
@@ -433,7 +444,7 @@ function renderReview() {
                         <p style="color:var(--muted);font-size:0.82rem;margin-top:8px">
                             Or if you already have ${terminalName} open, you can copy and paste this command:
                         </p>
-                        <div class="file-preview" style="max-height:none;margin-top:8px;font-size:0.82rem">${escHtml(moveCmd)}</div>
+                        <div class="file-preview cmd-copy" style="max-height:none;margin-top:8px;font-size:0.82rem"><span>${escHtml(moveCmd)}</span><button class="copy-btn" onclick="event.stopPropagation();copyCmd(this)">Copy</button></div>
                         <p style="color:var(--muted);font-size:0.82rem;margin-top:8px">
                             You should have these 4 files in your folder:
                         </p>
@@ -468,7 +479,7 @@ function renderReview() {
                         <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">
                             In ${terminalName}, type this command and press Enter. This tells the terminal to "go to" your workspace folder:
                         </p>
-                        <div class="file-preview" style="max-height:none;margin-top:8px;font-size:0.85rem">${escHtml(cdCmd)}</div>
+                        <div class="file-preview cmd-copy" style="max-height:none;margin-top:8px;font-size:0.85rem"><span>${escHtml(cdCmd)}</span><button class="copy-btn" onclick="event.stopPropagation();copyCmd(this)">Copy</button></div>
                         <p style="color:var(--muted);font-size:0.82rem;margin-top:6px">
                             You can verify you're in the right place by typing <code>${lsCmd}</code> and pressing Enter. You should see your 4 files listed.
                         </p>
@@ -484,7 +495,7 @@ function renderReview() {
                         <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">
                             Now start your AI assistant. Type one of these commands and press Enter:
                         </p>
-                        <div class="file-preview" style="max-height:none;margin-top:8px;font-size:0.85rem">gh copilot</div>
+                        <div class="file-preview cmd-copy" style="max-height:none;margin-top:8px;font-size:0.85rem"><span>gh copilot</span><button class="copy-btn" onclick="event.stopPropagation();copyCmd(this)">Copy</button></div>
                         <p style="color:var(--muted);font-size:0.82rem;margin-top:6px">
                             This is the standard GitHub Copilot CLI, included with your Copilot subscription. It supports custom instructions, tool use, and session management.
                         </p>
@@ -500,7 +511,7 @@ function renderReview() {
                         <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">
                             Your assistant will read the <code>copilot-instructions.md</code> file automatically and follow the rules you set up. Try saying:
                         </p>
-                        <div class="file-preview" style="max-height:none;margin-top:8px;font-size:0.85rem;color:var(--accent)">Hi ${escHtml(assistant)}, introduce yourself and tell me what you know about me.</div>
+                        <div class="file-preview cmd-copy" style="max-height:none;margin-top:8px;font-size:0.85rem;color:var(--accent)"><span>Hi ${escHtml(assistant)}, introduce yourself and tell me what you know about me.</span><button class="copy-btn" onclick="event.stopPropagation();copyCmd(this)">Copy</button></div>
                         <p style="color:var(--muted);font-size:0.82rem;margin-top:8px">
                             Your assistant should greet you by name, reference your role and tools, and follow the tone you selected. If it does, everything is working. &#127881;
                         </p>
@@ -721,6 +732,15 @@ function toggleOption(id, value, multi) {
 }
 
 function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function copyCmd(btn) {
+    var text = btn.parentElement.querySelector('span').textContent;
+    navigator.clipboard.writeText(text).then(function(){
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+    });
+}
 
 function downloadAll() {
     const files = generateFiles();

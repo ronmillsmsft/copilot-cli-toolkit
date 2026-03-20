@@ -134,8 +134,18 @@ a:hover{text-decoration:underline}
 .code-block{
   background:#0f1117;border-left:3px solid #10b981;border-radius:6px;
   padding:14px 18px;font-family:'Cascadia Code','Fira Code',Consolas,monospace;
-  font-size:0.85rem;color:#e2e8f0;margin:10px 0;overflow-x:auto;
+  font-size:0.85rem;color:#e2e8f0;margin:10px 0;overflow-x:auto;position:relative;
 }
+.code-block.copyable{cursor:pointer}
+.code-block.copyable:hover{background:#141820}
+.code-block.copyable::after{
+  content:'Copy';position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:0.7rem;color:#64748b;background:#1a1d27;border:1px solid #2a2d3a;
+  border-radius:4px;padding:3px 10px;opacity:0;transition:opacity 0.2s;
+}
+.code-block.copyable:hover::after{opacity:1}
+.code-block.copied::after{content:'Copied!';color:#10b981;border-color:#10b981;opacity:1}
 .step-num{
   display:inline-flex;align-items:center;justify-content:center;
   width:28px;height:28px;border-radius:50%;background:#7c3aed;
@@ -338,75 +348,74 @@ section{padding:48px 0}
   <div class="section-header">
     <div class="accent-bar teal">
       <h2>Get Started in 5 Minutes</h2>
-      <div class="subtitle">Four steps. The first one does most of the work for you.</div>
+      <div class="subtitle">Two ways to get started. Pick whichever feels right for you.</div>
     </div>
   </div>
 
-  <!-- Step 1: Setup Wizard -->
-  <div class="card" style="border-left:3px solid #10b981;margin-bottom:20px">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <span class="step-num" style="background:linear-gradient(135deg,#10b981,#06b6d4)">1</span>
-      <span style="color:#e2e8f0;font-size:1rem;font-weight:600">Personalize your assistant</span>
-    </div>
-    <p style="color:#94a3b8;font-size:0.9rem;line-height:1.7;margin-bottom:16px">
-      Before you install anything, tell your AI who you are and how you work. The setup wizard asks a few questions about your role, your tools, and your preferences, then generates all your config files ready to download. No command line needed.
-    </p>
-    <a href="starter/setup-wizard.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.95rem;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
-      🧙 Launch Setup Wizard
-    </a>
-    <div style="margin-top:12px;padding:12px 16px;background:#0f1117;border-radius:8px;border-left:3px solid #2a2d3a">
-      <p style="color:#64748b;font-size:0.8rem;font-style:italic;margin:0">
-        Why this matters: Your AI assistant is only as good as the context it has. A generic assistant gives generic answers. One that knows your name, role, tools, and communication style delivers personalized, high-value results from session one.
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+    <!-- PATH A: Wizard -->
+    <div class="card" style="border-top:3px solid #10b981">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <span style="font-size:1.3rem">&#129497;</span>
+        <div>
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#10b981">Path A: Guided</div>
+          <strong style="color:#e2e8f0;font-size:1rem">Setup Wizard</strong>
+        </div>
+        <span style="font-size:0.65rem;font-weight:600;background:rgba(16,185,129,0.2);color:#10b981;padding:2px 10px;border-radius:10px;margin-left:auto">Recommended</span>
+      </div>
+      <p style="color:#94a3b8;font-size:0.88rem;line-height:1.7;margin-bottom:16px">
+        Answer a few questions about yourself and your work. The wizard generates your config files, checks prerequisites, and walks you through every step of getting started. No command line experience needed.
+      </p>
+      <a href="starter/setup-wizard.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.95rem;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        Launch Setup Wizard
+      </a>
+      <p style="color:#64748b;font-size:0.78rem;margin-top:10px;line-height:1.6">
+        The wizard handles everything: prerequisites check, file generation, where to save them, how to open PowerShell, and your first command to type.
       </p>
     </div>
+
+    <!-- PATH B: Manual -->
+    <div class="card" style="border-top:3px solid #3b82f6">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <span style="font-size:1.3rem">&#128187;</span>
+        <div>
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#3b82f6">Path B: Manual</div>
+          <strong style="color:#e2e8f0;font-size:1rem">Clone and Configure</strong>
+        </div>
+      </div>
+      <p style="color:#94a3b8;font-size:0.88rem;line-height:1.7;margin-bottom:16px">
+        Clone the repo, customize the instruction files, and initialize the memory system yourself. Best if you're comfortable with the command line and want full control over setup.
+      </p>
+
+      <div style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="background:#3b82f6;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem">1</span>
+          <span style="color:#94a3b8;font-size:0.85rem">Clone the toolkit</span>
+        </div>
+        <div class="code-block copyable" onclick="copyText(this)">git clone https://github.com/ronmillsmsft/copilot-cli-toolkit.git</div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="background:#3b82f6;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem">2</span>
+          <span style="color:#94a3b8;font-size:0.85rem">Initialize the memory system</span>
+        </div>
+        <div class="code-block copyable" onclick="copyText(this)">cd copilot-cli-toolkit/memory &amp;&amp; python cli.py status</div>
+      </div>
+
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="background:#3b82f6;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem">3</span>
+          <span style="color:#94a3b8;font-size:0.85rem">Launch Copilot CLI</span>
+        </div>
+        <div class="code-block copyable" onclick="copyText(this)">gh copilot</div>
+      </div>
+    </div>
   </div>
 
-  <!-- Step 2: Clone -->
-  <div class="card" style="border-left:3px solid #3b82f6;margin-bottom:20px">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <span class="step-num" style="background:#3b82f6">2</span>
-      <span style="color:#e2e8f0;font-size:1rem;font-weight:600">Clone the toolkit</span>
-    </div>
-    <p style="color:#94a3b8;font-size:0.9rem;line-height:1.7;margin-bottom:12px">
-      Download the toolkit to your machine. This gives you the memory system, instruction templates, and all four workflow tools.
-    </p>
-    <div class="code-block">git clone https://github.com/ronmillsmsft/copilot-cli-toolkit.git</div>
-    <p style="color:#64748b;font-size:0.8rem;margin-top:8px">
-      Drop the config files from Step 1 into the appropriate folders. The wizard tells you exactly where each file goes.
-    </p>
-  </div>
-
-  <!-- Step 3: Initialize Memory -->
-  <div class="card" style="border-left:3px solid #8b5cf6;margin-bottom:20px">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <span class="step-num" style="background:#8b5cf6">3</span>
-      <span style="color:#e2e8f0;font-size:1rem;font-weight:600">Initialize the memory system</span>
-    </div>
-    <p style="color:#94a3b8;font-size:0.9rem;line-height:1.7;margin-bottom:12px">
-      This creates your persistent memory database. From this point on, every session builds on the last. Preferences, decisions, and context accumulate automatically.
-    </p>
-    <div class="code-block">cd memory &amp;&amp; python cli.py status</div>
-  </div>
-
-  <!-- Step 4: Launch -->
-  <div class="card" style="border-left:3px solid #f59e0b">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <span class="step-num" style="background:#f59e0b">4</span>
-       <span style="color:#e2e8f0;font-size:1rem;font-weight:600">Open PowerShell and launch Copilot CLI</span>
-    </div>
-    <p style="color:#94a3b8;font-size:0.9rem;line-height:1.7;margin-bottom:16px">
-      Open <strong style="color:#e2e8f0">PowerShell (64-bit)</strong>. This is important: Copilot CLI runs as a terminal agent and needs a full 64-bit PowerShell session for tool execution, file access, and process management. The default Windows Terminal with PowerShell works well.
-    </p>
-
-    <div style="background:#0f1117;border:1px solid #2a2d3a;border-top:3px solid #3b82f6;border-radius:8px;padding:20px;margin-bottom:16px">
-      <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#3b82f6;margin-bottom:10px">GitHub Copilot CLI</div>
-      <div class="code-block" style="border-left-color:#3b82f6">gh copilot</div>
-      <p style="color:#94a3b8;font-size:0.85rem;line-height:1.6;margin:10px 0">The built-in CLI agent from GitHub. Included with your GitHub Copilot subscription. Supports custom instructions, tool use, and session management.</p>
-      <a href="https://docs.github.com/en/copilot/github-copilot-in-the-cli" target="_blank" rel="noopener" style="font-size:0.82rem;color:#3b82f6">Learn more about GitHub Copilot CLI &rarr;</a>
-    </div>
-
-    <p style="color:#64748b;font-size:0.82rem;line-height:1.6">
-      Navigate to your workspace folder first, then run <code style="color:#3b82f6">gh copilot</code>. Your assistant reads instruction files from the current directory automatically.
+  <div style="padding:12px 16px;background:#1a1d27;border-radius:8px;border-left:3px solid #2a2d3a;text-align:center">
+    <p style="color:#64748b;font-size:0.82rem;margin:0">
+      <strong style="color:#94a3b8">Both paths get you to the same place:</strong> a personalized AI assistant running in your terminal. The wizard just walks you through it step by step.
     </p>
   </div>
 </div>
@@ -769,6 +778,13 @@ section{padding:48px 0}
 </footer>
 
 <script>
+function copyText(el){
+  var text=el.textContent.replace('Copy','').replace('Copied!','').trim();
+  navigator.clipboard.writeText(text).then(function(){
+    el.classList.add('copied');
+    setTimeout(function(){el.classList.remove('copied')},1500);
+  });
+}
 (function(){
   var sections=document.querySelectorAll('.fade-section');
   if('IntersectionObserver' in window){
