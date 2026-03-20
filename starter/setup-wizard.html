@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Copilot CLI Toolkit — Setup Wizard</title>
+<title>Copilot CLI Toolkit - Setup Wizard</title>
 <style>
     :root {
         --bg: #0d1117; --surface: #161b22; --surface2: #21262d;
@@ -140,7 +140,7 @@ const STEPS = [
               options: ["Azure DevOps", "Jira", "GitHub", "Confluence", "SharePoint", "Power BI", "Excel", "VS Code", "Teams", "Outlook", "Planner", "OneNote"],
               multi: true, hint: "Pick all that apply." },
             { id: "workLanguages", label: "What programming languages do you work with? (if any)", type: "text",
-              placeholder: "e.g., Python, JavaScript, SQL, PowerShell — or 'none'", hint: "It's totally fine to say none." },
+              placeholder: "e.g., Python, JavaScript, SQL, PowerShell - or 'none'", hint: "It's totally fine to say none." },
             { id: "workGoals", label: "What are you hoping your assistant will help with most?", type: "options",
               options: ["Save time on repetitive tasks", "Meeting prep & notes", "Writing & communication", "Code & scripts", "Data analysis", "Learning new skills", "Staying organized"],
               multi: true, hint: "Pick your top priorities." },
@@ -155,7 +155,7 @@ const STEPS = [
             { id: "prefMistakes", label: "If something goes wrong, should your assistant...", type: "options",
               options: ["Try to fix it automatically", "Tell me what happened and suggest a fix", "Stop and ask before doing anything"], multi: false },
             { id: "prefVerbosity", label: "How much detail do you want in responses?", type: "options",
-              options: ["Keep it short", "Normal — enough to understand", "Give me all the details"], multi: false },
+              options: ["Keep it short", "Normal - enough to understand", "Give me all the details"], multi: false },
         ]
     },
     {
@@ -228,6 +228,7 @@ function renderStep(idx) {
 function renderReview() {
     const name = formData.userName || 'there';
     const assistant = formData.assistantName || 'Assistant';
+    const os = formData.userOS || 'Windows';
     const files = generateFiles();
 
     const reviewRows = [
@@ -251,10 +252,29 @@ function renderReview() {
 
     const firstFile = Object.keys(files)[0];
 
+    const isWin = (os === 'Windows');
+    const isMac = (os === 'Mac');
+    const pathSep = isWin ? '\\' : '/';
+    const homeDir = isWin ? 'C:\\Users\\YourName' : (isMac ? '/Users/YourName' : '/home/YourName');
+    const folderName = 'copilot-workspace';
+    const fullPath = isWin ? `C:\\Users\\YourName\\${folderName}` : (isMac ? `/Users/YourName/${folderName}` : `/home/YourName/${folderName}`);
+    const terminalName = isWin ? 'PowerShell (64-bit)' : (isMac ? 'Terminal' : 'Terminal');
+    const openTerminal = isWin
+        ? 'Click the Start menu, type <strong>PowerShell</strong>, and select <strong>Windows PowerShell</strong> (not "Windows PowerShell (x86)").'
+        : (isMac
+            ? 'Open <strong>Spotlight</strong> (Cmd+Space), type <strong>Terminal</strong>, and press Enter.'
+            : 'Open your terminal application (Ctrl+Alt+T on most Linux distros).');
+    const mkdirCmd = isWin ? `mkdir ${fullPath}` : `mkdir -p ~/${folderName}`;
+    const cdCmd = isWin ? `cd ${fullPath}` : `cd ~/${folderName}`;
+    const lsCmd = isWin ? 'dir' : 'ls';
+    const copyInstr = isWin
+        ? `Move the downloaded files from your <strong>Downloads</strong> folder into <code>${fullPath}</code>. You can do this in File Explorer: open Downloads, select the 4 files, cut them (Ctrl+X), navigate to <code>${fullPath}</code>, and paste (Ctrl+V).`
+        : `Move the downloaded files from your <strong>Downloads</strong> folder into <code>~/${folderName}</code>. You can drag them in Finder or run: <code>mv ~/Downloads/copilot-instructions.md ~/Downloads/USER.md ~/Downloads/SOUL.md ~/Downloads/seed-memory.sh ~/${folderName}/</code>`;
+
     return `
         <div class="card">
-            <h2>Looking good, ${escHtml(name)}! 🎉</h2>
-            <div class="subtitle">Here's your setup. The files below are ready to download.</div>
+            <h2>Looking good, ${escHtml(name)}! &#127881;</h2>
+            <div class="subtitle">Here's your setup. Download the files, then follow the steps below to get running.</div>
             <div class="review-section">
                 <h3>Your Configuration</h3>
                 ${reviewRows}
@@ -262,8 +282,118 @@ function renderReview() {
             <div class="file-tabs">${tabButtons}</div>
             <div class="file-preview" id="filePreview">${escHtml(files[firstFile])}</div>
             <div class="btn-row">
-                <button class="btn btn-secondary" onclick="renderStep(${currentStep - 1})">← Back</button>
-                <button class="btn btn-success" onclick="downloadAll()">⬇ Download All Files</button>
+                <button class="btn btn-secondary" onclick="renderStep(${currentStep - 1})">&#8592; Back</button>
+                <button class="btn btn-success" onclick="downloadAndShowNext()">&#11015; Download All Files</button>
+            </div>
+        </div>
+        <div class="card hidden" id="nextSteps" style="margin-top:24px">
+            <h2>&#127937; What to Do Next</h2>
+            <div class="subtitle">Follow these steps in order. Take your time.</div>
+
+            <div style="margin-top:24px">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px">
+                    <span style="background:var(--green);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0">1</span>
+                    <div>
+                        <strong style="color:var(--text);font-size:1rem">Create a workspace folder</strong>
+                        <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">
+                            This is where your assistant's files will live. Create a new folder somewhere easy to find.
+                            A good location is <code>${fullPath}</code>.
+                        </p>
+                        <p style="color:var(--muted);font-size:0.82rem;margin-top:6px">
+                            You can create this folder in File Explorer (right-click > New > Folder) or in ${terminalName}:
+                        </p>
+                        <div class="file-preview" style="max-height:none;margin-top:8px;font-size:0.85rem">${escHtml(mkdirCmd)}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px">
+                    <span style="background:var(--accent);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0">2</span>
+                    <div>
+                        <strong style="color:var(--text);font-size:1rem">Move your downloaded files into that folder</strong>
+                        <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">
+                            ${copyInstr}
+                        </p>
+                        <p style="color:var(--muted);font-size:0.82rem;margin-top:6px">
+                            You should have these 4 files in your folder:
+                        </p>
+                        <ul style="color:var(--muted);font-size:0.85rem;margin:8px 0 0 16px">
+                            <li><code>copilot-instructions.md</code> &#8212; your assistant's rules and personality</li>
+                            <li><code>USER.md</code> &#8212; your profile (role, tools, goals)</li>
+                            <li><code>SOUL.md</code> &#8212; your assistant's identity and values</li>
+                            <li><code>seed-memory.sh</code> &#8212; a script to initialize memory (optional, for later)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px">
+                    <span style="background:var(--purple);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0">3</span>
+                    <div>
+                        <strong style="color:var(--text);font-size:1rem">Open ${terminalName}</strong>
+                        <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">
+                            ${openTerminal}
+                        </p>
+                        ${isWin ? '<p style="color:var(--muted);font-size:0.82rem;margin-top:6px"><strong style="color:var(--yellow)">Why 64-bit?</strong> Copilot CLI needs a full 64-bit session for file access, tool execution, and process management. The 32-bit version (x86) will not work correctly.</p>' : ''}
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px">
+                    <span style="background:var(--yellow);color:#000;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0">4</span>
+                    <div>
+                        <strong style="color:var(--text);font-size:1rem">Navigate to your workspace folder</strong>
+                        <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">
+                            In ${terminalName}, type this command and press Enter. This tells the terminal to "go to" your workspace folder:
+                        </p>
+                        <div class="file-preview" style="max-height:none;margin-top:8px;font-size:0.85rem">${escHtml(cdCmd)}</div>
+                        <p style="color:var(--muted);font-size:0.82rem;margin-top:6px">
+                            You can verify you're in the right place by typing <code>${lsCmd}</code> and pressing Enter. You should see your 4 files listed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px">
+                    <span style="background:var(--red);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0">5</span>
+                    <div>
+                        <strong style="color:var(--text);font-size:1rem">Launch Copilot CLI</strong>
+                        <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">
+                            Now start your AI assistant. Type one of these commands and press Enter:
+                        </p>
+                        <div class="file-preview" style="max-height:none;margin-top:8px;font-size:0.85rem">gh copilot</div>
+                        <p style="color:var(--muted);font-size:0.82rem;margin-top:6px">
+                            This is the standard GitHub Copilot CLI. If you have <a href="https://github.com/nicholasgriffintn/agency" target="_blank" style="color:var(--accent)">Agency CLI</a> installed, you can use <code>agency copilot</code> instead for plugin support.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px">
+                    <span style="background:var(--green);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0">&#10003;</span>
+                    <div>
+                        <strong style="color:var(--text);font-size:1rem">You're in! Start talking to ${escHtml(assistant)}</strong>
+                        <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">
+                            Your assistant will read the <code>copilot-instructions.md</code> file automatically and follow the rules you set up. Try saying:
+                        </p>
+                        <div class="file-preview" style="max-height:none;margin-top:8px;font-size:0.85rem;color:var(--accent)">Hi ${escHtml(assistant)}, introduce yourself and tell me what you know about me.</div>
+                        <p style="color:var(--muted);font-size:0.82rem;margin-top:8px">
+                            Your assistant should greet you by name, reference your role and tools, and follow the tone you selected. If it does, everything is working. &#127881;
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;padding:16px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--green)">
+                <strong style="color:var(--text);font-size:0.9rem">&#128161; What happens next?</strong>
+                <p style="color:var(--muted);font-size:0.85rem;margin-top:6px;line-height:1.7">
+                    Every time you open ${terminalName}, navigate to your workspace folder (<code>${escHtml(cdCmd)}</code>) and run <code>gh copilot</code>. Your assistant reads the instruction files from whatever folder you're in. Over time, you can add the memory system, workflow tools, and more. Visit the <a href="index.html" style="color:var(--accent)">Copilot CLI Toolkit</a> for guides on each tier.
+                </p>
             </div>
         </div>`;
 }
@@ -289,7 +419,7 @@ function generateFiles() {
     const goals = Array.isArray(d.workGoals) ? d.workGoals.join(', ') : (d.workGoals || '');
     const decisions = d.prefDecisions || 'Recommend one but explain why';
     const errors = d.prefMistakes || 'Tell me what happened and suggest a fix';
-    const verbosity = d.prefVerbosity || 'Normal — enough to understand';
+    const verbosity = d.prefVerbosity || 'Normal - enough to understand';
 
     const toneMap = {
         'Direct & efficient': 'Direct and concise. Say it in the fewest words that are still clear.',
@@ -323,7 +453,7 @@ function generateFiles() {
 
 ## Identity
 
-You are ${aName} — ${name}'s persistent AI assistant running in GitHub Copilot CLI.
+You are ${aName} - ${name}'s persistent AI assistant running in GitHub Copilot CLI.
 Your job is to make ${name} faster, smarter, and more effective.
 
 ## About ${name}
@@ -352,9 +482,9 @@ ${errorMap[errors] || errors}
 
 ## Operating Rules
 
-1. **Action Over Discussion** — Do the work, don't describe what you could do.
-2. **Own the Task** — When you take something on, finish it. Don't come back with excuses.
-3. **Context Is King** — Load memory at session start. Reference past work when relevant.
+1. **Action Over Discussion** - Do the work, don't describe what you could do.
+2. **Own the Task** - When you take something on, finish it. Don't come back with excuses.
+3. **Context Is King** - Load memory at session start. Reference past work when relevant.
 
 ## Boot Sequence
 
@@ -376,7 +506,7 @@ When ${name} is done, automatically:
 3. Save any new insights (decisions, patterns, context)
 `;
 
-    files['USER.md'] = `# USER.md — ${name}'s Profile
+    files['USER.md'] = `# USER.md - ${name}'s Profile
 
 ## Basics
 
@@ -402,7 +532,7 @@ ${goals ? goals.split(', ').map(g => '- ' + g).join('\n') : '- (not specified)'}
 - **Detail level:** ${verbosity}
 `;
 
-    files['SOUL.md'] = `# SOUL.md — ${aName}'s Identity
+    files['SOUL.md'] = `# SOUL.md - ${aName}'s Identity
 
 ## Identity
 
@@ -416,10 +546,10 @@ ${toneMap[tone] || tone}
 
 ## Core Values
 
-1. **Competence Over Performance** — Be helpful, not performatively helpful.
-2. **Ownership** — Own tasks end-to-end.
-3. **Anticipation** — Think ahead. What will ${name} need next?
-4. **Efficiency** — Every interaction should be high-value.
+1. **Competence Over Performance** - Be helpful, not performatively helpful.
+2. **Ownership** - Own tasks end-to-end.
+3. **Anticipation** - Think ahead. What will ${name} need next?
+4. **Efficiency** - Every interaction should be high-value.
 
 ## Anti-Patterns
 
@@ -475,7 +605,6 @@ function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,
 
 function downloadAll() {
     const files = generateFiles();
-    // Create a zip-like download: one file at a time (no zip library needed)
     for (const [name, content] of Object.entries(files)) {
         const blob = new Blob([content], { type: 'text/plain' });
         const a = document.createElement('a');
@@ -485,6 +614,15 @@ function downloadAll() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(a.href);
+    }
+}
+
+function downloadAndShowNext() {
+    downloadAll();
+    const nextSteps = document.getElementById('nextSteps');
+    if (nextSteps) {
+        nextSteps.classList.remove('hidden');
+        nextSteps.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
