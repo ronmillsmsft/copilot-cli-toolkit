@@ -248,33 +248,15 @@ function renderStep(idx) {
 }
 
 function renderPrereqs() {
-    // Prerequisites step: show what's needed at each tier with install links
+    // Prerequisites step: prereqs shown FIRST so users don't skip them
     return `
         <div class="card">
             <h2>Getting Ready</h2>
             <div class="subtitle">Before we personalize your assistant, let's make sure you have the essentials installed.</div>
 
-            <div style="margin-top:20px">
-                <label>What level are you starting at?</label>
-                <div class="hint">Not sure? Pick "Just the basics" and you can add more later.</div>
-                <div class="option-group" style="flex-direction:column;gap:12px;margin-top:10px">
-                    <div class="option-btn ${formData.setupTier === 'basic' ? 'selected' : ''}" onclick="toggleOption('setupTier','basic',false)" style="text-align:left;padding:14px 18px">
-                        <strong style="display:block;margin-bottom:4px">&#127937; Just the basics (Tier 1)</strong>
-                        <span style="font-size:0.82rem;color:var(--muted)">Custom instructions only. Your AI gets a personality and rules. No coding needed.</span>
-                    </div>
-                    <div class="option-btn ${formData.setupTier === 'memory' ? 'selected' : ''}" onclick="toggleOption('setupTier','memory',false)" style="text-align:left;padding:14px 18px">
-                        <strong style="display:block;margin-bottom:4px">&#129504; Basics + Memory (Tier 2)</strong>
-                        <span style="font-size:0.82rem;color:var(--muted)">Your AI remembers you across sessions. Needs Python installed.</span>
-                    </div>
-                    <div class="option-btn ${formData.setupTier === 'full' ? 'selected' : ''}" onclick="toggleOption('setupTier','full',false)" style="text-align:left;padding:14px 18px">
-                        <strong style="display:block;margin-bottom:4px">&#128640; Full toolkit (Tier 3-4)</strong>
-                        <span style="font-size:0.82rem;color:var(--muted)">Memory + workflow automation + dashboard. Needs Python and optionally Streamlit.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div style="margin-top:28px;padding:20px;background:var(--surface2);border-radius:8px">
-                <h3 style="font-size:0.95rem;color:var(--accent);margin-bottom:14px">&#9745; Prerequisites Checklist</h3>
+            <div style="margin-top:20px;padding:20px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--accent)">
+                <h3 style="font-size:1rem;color:var(--accent);margin-bottom:4px">&#9888;&#65039; Prerequisites Checklist</h3>
+                <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px">Complete these before continuing. The wizard generates config files, but you'll need these tools to use them.</p>
 
                 <div style="margin-bottom:16px">
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
@@ -339,6 +321,25 @@ function renderPrereqs() {
                 <p style="font-size:0.82rem;color:var(--muted);margin:0">
                     <strong style="color:var(--text)">Don't have everything yet?</strong> That's fine. You can complete this wizard now and install the tools before you use the files. The wizard generates config files that don't require anything to create.
                 </p>
+            </div>
+
+            <div style="margin-top:28px">
+                <label>What level are you starting at?</label>
+                <div class="hint">Not sure? Pick "Just the basics" and you can add more later.</div>
+                <div class="option-group" style="flex-direction:column;gap:12px;margin-top:10px">
+                    <div class="option-btn ${formData.setupTier === 'basic' ? 'selected' : ''}" onclick="toggleOption('setupTier','basic',false)" style="text-align:left;padding:14px 18px">
+                        <strong style="display:block;margin-bottom:4px">&#127937; Just the basics (Tier 1)</strong>
+                        <span style="font-size:0.82rem;color:var(--muted)">Custom instructions only. Your AI gets a personality and rules. No coding needed.</span>
+                    </div>
+                    <div class="option-btn ${formData.setupTier === 'memory' ? 'selected' : ''}" onclick="toggleOption('setupTier','memory',false)" style="text-align:left;padding:14px 18px">
+                        <strong style="display:block;margin-bottom:4px">&#129504; Basics + Memory (Tier 2)</strong>
+                        <span style="font-size:0.82rem;color:var(--muted)">Your AI remembers you across sessions. Needs Python installed.</span>
+                    </div>
+                    <div class="option-btn ${formData.setupTier === 'full' ? 'selected' : ''}" onclick="toggleOption('setupTier','full',false)" style="text-align:left;padding:14px 18px">
+                        <strong style="display:block;margin-bottom:4px">&#128640; Full toolkit (Tier 3-4)</strong>
+                        <span style="font-size:0.82rem;color:var(--muted)">Memory + workflow automation + dashboard. Needs Python and optionally Streamlit.</span>
+                    </div>
+                </div>
             </div>
 
             <div class="btn-row">
